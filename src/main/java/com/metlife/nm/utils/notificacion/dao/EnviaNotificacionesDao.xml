@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<beans>
+	<bean id="EnviaNotificacionesDao" class="com.metlife.nm.utils.notificacion.dao.EnviaNotificacionesDaoImpl">
+		<property name="dataSource" ref="dataSource"></property>
+		
+		<property name="qryAcentos">
+			<value>
+				<![CDATA[						
+	 				SELECT CASE WHEN VALOR_02 = 'S' THEN '1' ELSE '0' END FLAG
+	                FROM MXGES_V_METATABLAS1
+	                WHERE CVE_TABLA = 'CAT_PROPERTIES'
+	                AND CLAVE = 'REM_ACENTOS'
+				]]>
+			</value>
+		</property>
+		
+		<property name="qryConcurrent">
+			<value>
+				<![CDATA[						
+	 				SELECT CASE WHEN VALOR_02 = 'S' THEN '1' ELSE '0' END FLAG
+	                FROM MXGES_V_METATABLAS1
+	                WHERE CVE_TABLA = 'CAT_PROPERTIES'
+	                AND CLAVE = 'CONCURRENCE'
+				]]>
+			</value>
+		</property>
+		
+		<property name="updConcurrent">
+			<value>
+				<![CDATA[						
+	 				 UPDATE MXGES_CAT_VALORES
+	                SET VALOR_02 = ?
+	                WHERE CLAVE_01 = 'CONCURRENCE'
+				]]>
+			</value>
+		</property>
+		
+		<property name="qryConfiguraciones">
+			<value>
+				<![CDATA[
+						SELECT PROC.CVE_PROCESO                         , PROC.CVE_LINEA_NEGOCIO                           , NOTIF.CVE_NOTIFICACION, NOTIF.CVE_MENSAJE               ,
+						NOTIF.CVE_MEDIO_ENVIO                           , NVL(FREC.CVE_FRECUENCIA_ENVIO,'S') TIPOFRECUENCIA, FREC.CVE_DIA          , NVL(FREC.DIA_ENVIO,0) DIA_SEMANA,
+						NVL(FREC.MM_NOTIFICACION,0) MINUTOS_NOTIFICACION, NVL(FREC.HH_NOTIFICACION,0) HORA_NOTIFICACION    , LPAD(NVL(FREC.HH_NOTIFICACION,'00'),2,'0')
+						||':'
+						|| LPAD(NVL(FREC.MM_NOTIFICACION,'00'),2,'0') HORAENVIO, NOTIF.SW_ENVIO_AGENTE , NOTIF.SW_ENVIO_CLIENTE , NOTIF.SW_DXN            ,
+						NOTIF.SW_COB_BANCARIA                                  , NOTIF.SW_PAGO_DIRECTO , NOTIF.SW_REGLAB_BASE   , NOTIF.SW_REGLAB_EVENTUAL,
+						NOTIF.CVE_TIPO_RESP_CB                                 , NOTIF.SW_REINTENTA_CB
+								FROM MXGES_CAT_PROCESOS PROC                         , MXGES_NOTIFICACIONES NOTIF, MXGES_FREC_NOTIFICACIONES FREC
+							WHERE PROC.ESTATUS        = 'A'
+					AND NOTIF.CVE_PROCESO       = PROC.CVE_PROCESO
+					AND NOTIF.CVE_LINEA_NEGOCIO = PROC.CVE_LINEA_NEGOCIO
+					AND PROC.CVE_PROCESO       != 'PROC_CALIDAD'
+					AND NOTIF.ESTATUS           = 'A'
+					AND FREC.CVE_PROCESO        = NOTIF.CVE_PROCESO
+					AND FREC.CVE_LINEA_NEGOCIO  = NOTIF.CVE_LINEA_NEGOCIO
+					AND FREC.CVE_NOTIFICACION   = NOTIF.CVE_NOTIFICACION
+					AND FREC.CVE_MENSAJE        = NOTIF.CVE_MENSAJE
+					AND FREC.CVE_DIA            = ?
+					AND TO_TIMESTAMP(TO_CHAR(SYSDATE,'HH24:MI'), 'HH24:MI')  BETWEEN TO_TIMESTAMP(FREC.HH_NOTIFICACION || ':' || FREC.MM_NOTIFICACION, 'HH24:MI') AND TO_TIMESTAMP(TO_CHAR((TO_DATE(FREC.HH_NOTIFICACION || ':' || FREC.MM_NOTIFICACION,'HH24:MI')+((10/60)/24)),'HH24:MI'), 'HH24:MI')
+					ORDER BY PROC.PRIORIDAD, PROC.CVE_PROCESO, NOTIF.CVE_MEDIO_ENVIO, NOTIF.CVE_MENSAJE,
+						FREC.CVE_FRECUENCIA_ENVIO
+
+
+				]]>
+			</value>
+		</property>
+
+        
+        
+		<property name="updCabecera">
+			<value>
+				<![CDATA[
+					UPDATE MXGES_ENVIO_PROCESOS
+					SET CVE_ESTATUS                  = ?
+					WHERE ID_PROCESO       = ?
+				]]>
+			</value>
+		</property>
+		<property name="qryCabeceras">
+			<value>
+                <![CDATA[
+					SELECT ID_PROCESO "ID_PROCESO_PADRE", CVE_PROCESO       , CVE_MEDIO_ENVIO , CVE_ESTATUS      ,
+						REG_PROCESADOS                     , DES_MENSAJE       , EJECUTADO_POR   , REG_EXITOSOS     ,
+						REG_ERROR                          , NOM_ARCHIVO_FISICO, CVE_NOTIFICACION, CVE_LINEA_NEGOCIO,
+						CVE_MENSAJE
+					FROM MXGES_ENVIO_PROCESOS
+					WHERE CVE_PROCESO                  = 'PROC_CARGA'
+					AND SUBSTR(NOM_ARCHIVO_FISICO,1,5) =
+						(SELECT MET.VALOR_02
+						FROM MXGES_V_METATABLAS1 MET
+						WHERE MET.CVE_TABLA = 'CAT_HOMOLOGAPROC'
+						AND MET.CLAVE       = ?
+						)
+					AND CVE_LINEA_NEGOCIO = ?
+					AND CVE_ESTATUS       = 'F'
+					AND FEC_FIN_PROCESO  >= TRUNC(SYSDATE - ?)
+					ORDER BY ID_PROCESO
+                ]]>
+			</value>
+		</property>
+		
+		<property name="qryIdProcesoEnvio">
+			<value>
+                <![CDATA[
+                	SELECT MXGES_SEQ_ENVIO_PROCESOS.NEXTVAL FROM DUAL
+                ]]>
+			</value>
+		</property>
+		<property name="qryRetroactividad">
+			<value>
+                <![CDATA[
+               	  	 SELECT TO_NUMBER(VALOR_PARAMETRO)
+					   FROM MXGES_CAT_PARAMETROS PAR
+					  WHERE PAR.CVE_PARAMETRO = 'P_DIASRETROENVIO'
+                ]]>
+			</value>
+		</property>
+		<property name="qryLimite">
+			<value>
+                <![CDATA[
+                	SELECT 	VALOR_PARAMETRO 
+                	FROM 	MXGES_CAT_PARAMETROS 
+                	WHERE 	CVE_PARAMETRO='P_LIMITE_NOTIFICACIONES'
+                 ]]>
+			</value>
+		</property>	
+		<property name="qryColumnaFisica">
+			<value>
+                <![CDATA[
+						SELECT COL_FISICA
+								FROM MXGES_CAT_VARIABLES
+							WHERE CVE_VARIABLE = ?
+					AND ESTATUS          = 'A'
+                ]]>
+			</value>
+		</property>
+		<property name="qryValorVariable">
+			<value>
+                <![CDATA[
+               	  	  FROM MXGES_ENVIO_NOTIFICACIONES
+						  WHERE ID_REGISTRO = ?
+						AND ID_PROCESO      = ?
+                ]]>
+			</value>
+		</property>
+		
+		<property name="spProcesaSinDatos">
+			<value>
+                <![CDATA[
+               	  	CALL MXGES_PROCESA_SIN_CORREOS(?,?,?)
+                ]]>
+			</value>
+		</property>
+		
+		<property name="insNuevaCabecera">
+			<value>
+                <![CDATA[
+					 INSERT
+					   INTO MXGES_ENVIO_PROCESOS
+					  (
+					    ID_PROCESO, ID_PROCESO_FK, CVE_MEDIO_ENVIO,
+					    FEC_INICIO_PROCESO      , CVE_ESTATUS, REG_PROCESADOS ,
+					    REG_EXITOSOS            , REG_ERROR  , NOM_ARCHIVO_FISICO
+					  )
+					  VALUES
+					  (
+					    ?      , ?  , ? ,
+					    SYSDATE, 'I', 0 ,
+					    0      , 0  , ?
+					  )
+                ]]>
+			</value>
+			</property>
+			
+			<property name="qryMensajes">
+            	<bean class="com.metlife.nm.domain.JdbcQueryParameters">
+                	<property name="sqlBase">
+                    	<value>
+                        	<![CDATA[
+	SELECT NOTIF.ID_REGISTRO               , NOTIF.ID_PROCESO          , NOTIF.CVE_PROCESO           , NOTIF.CVE_LINEA_NEGOCIO    ,
+	CONFNOT.CVE_NOTIFICACION               , CONFNOT.CVE_MEDIO_ENVIO   , CONFNOT.SW_ENVIO_AGENTE     , CONFNOT.SW_ENVIO_CLIENTE   ,
+	CONFNOT.SW_ENVIO_PROMOT                , CONFNOT.CVE_TIPO_RESP_CB  , CONFNOT.SW_REINTENTA_CB     , CONFNOT.SW_DXN             ,
+	CONFNOT.SW_COB_BANCARIA                , CONFNOT.SW_PAGO_DIRECTO   , CONFNOT.SW_REGLAB_BASE      , CONFNOT.SW_REGLAB_EVENTUAL ,
+	MENS.CVE_MENSAJE                       , MENS.DES_MENSAJE          , MENS.ASUNTO                 , MENS.CUERPO                ,
+	NOTIF.CVE_ESTATUS                      , NOTIF.TEL_MOVIL_APODERADO , NOTIF.TEL_MOVIL_CLIENTE     , NOTIF.EMAIL_APODERADO      ,
+	NOTIF.EMAIL_CLIENTE                    , NOTIF.CONDUCTO_COBRO      , NOTIF.ID_REGIMEN_LABORAL    , NOTIF.EMAIL_PROMOTORIA
+			FROM MXGES_ENVIO_NOTIFICACIONES NOTIF, MXGES_CAT_PROCESOS PROC   , MXGES_NOTIFICACIONES CONFNOT, MXGES_MENSAJES MENS
+		WHERE NOTIF.ID_PROCESO = ?
+AND EXISTS
+	(SELECT 'S'
+				FROM MXGES_V_METATABLAS1 MET1
+			WHERE CVE_TABLA     = 'CAT_ESTATUS_ENVIO'
+	AND NVL(VALOR_02,'N') = 'S'
+	AND NOTIF.CVE_ESTATUS = MET1.CLAVE
+	)
+AND NOT EXISTS
+	(SELECT NULL
+				FROM MXGES_EXCLUSIONES_RETUP EXC
+			WHERE EXC.CVE_PROCESO = (SELECT CLAVE
+					FROM MXGES_V_METATABLAS1 VAL2
+				WHERE VAL2 . DESCRIPCION = NOTIF . CVE_PROCESO_ORIGEN
+		AND VAL2 . CVE_TABLA       = 'CAT_HOMOLOGAPROC'
+		)
+	AND EXC.CVE_LINEA_NEGOCIO = NOTIF.CVE_LINEA_NEGOCIO
+	AND EXC.ID_RETENEDOR      = NOTIF.ID_RETENEDOR
+	AND EXC.ID_UNIDAD_PAGO    = NOTIF.ID_UNIDAD_PAGO
+	)
+AND PROC . CVE_PROCESO = (SELECT CLAVE
+				FROM MXGES_V_METATABLAS1 VAL2
+			WHERE VAL2 . DESCRIPCION = NOTIF . CVE_PROCESO_ORIGEN
+	AND VAL2 . CVE_TABLA       = 'CAT_HOMOLOGAPROC'
+	)
+AND PROC.CVE_LINEA_NEGOCIO    = NOTIF.CVE_LINEA_NEGOCIO
+AND CONFNOT.CVE_PROCESO       = PROC.CVE_PROCESO
+AND CONFNOT.CVE_LINEA_NEGOCIO = PROC.CVE_LINEA_NEGOCIO
+AND CONFNOT.ESTATUS           = 'A'
+AND CONFNOT.CVE_NOTIFICACION  = ?
+AND CONFNOT.CVE_LINEA_NEGOCIO = ?
+AND CONFNOT.CVE_MENSAJE       = ?
+AND MENS.CVE_PROCESO          = CONFNOT.CVE_PROCESO
+AND MENS.CVE_MENSAJE          = CONFNOT.CVE_MENSAJE
+AND MENS.ESTATUS              = 'A'
+AND NOT EXISTS
+	(SELECT NULL
+				FROM MXGES_INFO_ENVIOS ENV, MXGES_ENVIO_NOTIFICACIONES NOTIF2
+			WHERE TRUNC(ENV.FEC_ENVIO) = TRUNC(SYSDATE)
+	AND ENV.COL_04               = 'EN'
+	AND NOTIF2.ID_PROCESO        = ENV.ID_PROCESO
+	AND NOTIF2.ID_REGISTRO       = ENV.ID_REGISTRO
+	AND NOTIF2.ID_POLIZA         = NOTIF.ID_POLIZA
+	AND NOTIF2.CVE_PRODUCTO      = NOTIF.CVE_PRODUCTO
+	AND PROC.CVE_PROCESO         != ENV.COL_05
+	
+	)
+			                ]]>
+						</value>
+					</property>
+					<property name="optionalParameters">
+                    	<props>
+                    		
+                        	<prop key="aceptada">CVE_RESP_BANCARIA = 5</prop>
+                        	<prop key="rechazada">CVE_RESP_BANCARIA = 41</prop>
+                        	<prop key="reintentable">CVE_RESP_BANCARIA IN (42, 43)</prop>
+                        	<prop key="dxn">CONDUCTO_COBRO  = '01' </prop>
+                        	<prop key="pagodirecto">CONDUCTO_COBRO  = '02' </prop>
+                        	<prop key="cobrbanc">CONDUCTO_COBRO  = '12' </prop>
+                        	<prop key="eventual">ID_REGIMEN_LABORAL  = 2 </prop>
+                        	<prop key="base">ID_REGIMEN_LABORAL  = 1 </prop>
+	                    </props>
+                	</property>
+				</bean>
+			</property>
+		<property name="insEnvioSMS">
+			<value>
+                <![CDATA[
+					INSERT
+							INTO MXGES_INFO_ENVIOS
+					(
+						ID_ENVIO       , ENVIO_TO     , BODY       , FEC_ENVIO ,
+						ESTATUS        , FEC_REGISTRO , ID_REGISTRO, ID_PROCESO,
+						CVE_MEDIO_ENVIO, COL_01       , COL_02     , COL_03    ,
+						COL_04         , COL_05       , DES_MENSAJE_ERROR
+					)
+					VALUES
+					(
+						ENVIOS_ID_SEQ.NEXTVAL   , ?      , ? , SYSDATE,
+						'A' , SYSDATE, ? , ?      ,
+						'SM', ?      , ? , ?      ,
+						?   , ?      , ?
+					)
+  				]]>
+			</value>
+		</property>
+  		<property name="insEnvioEmail">
+			<value>
+                <![CDATA[
+					INSERT
+							INTO MXGES_INFO_ENVIOS
+					(
+						ID_ENVIO  , ENVIO_TO       , SUBJECT      , BODY       ,
+						FEC_ENVIO , ESTATUS        , FEC_REGISTRO , ID_REGISTRO,
+						ID_PROCESO, CVE_MEDIO_ENVIO, COL_01       , COL_02     ,
+						COL_03    , COL_04         , COL_05       , DES_MENSAJE_ERROR
+					)
+					VALUES
+					(
+						?      , ?   , ?      , ? ,
+						SYSDATE, 'A' , SYSDATE, ? ,
+						?      , 'EM', ?      , ? ,
+						?      , ?   , ?      , ? 
+					)
+  				]]>
+			</value>
+		</property>
+  
+  <property name="updRegistro">
+			<value>
+                <![CDATA[
+					 UPDATE MXGES_ENVIO_NOTIFICACIONES
+						SET CVE_ESTATUS     = ?
+						  WHERE ID_REGISTRO = ?
+						AND ID_PROCESO      = ?	
+  				]]>
+			</value>
+		</property>
+		 
+  
+  <property name="updEnvio">
+			<value>
+                <![CDATA[
+						UPDATE MXGES_INFO_ENVIOS
+SET COL_04       =?, FEC_ENVIO = SYSDATE, DES_MENSAJE_ERROR = ?
+		WHERE ID_ENVIO = ?
+				    
+  				]]>
+			</value>
+		</property>
+		
+		<property name="qryNotificacionesActivas">
+			<value>
+				<![CDATA[
+					SELECT 
+					CVE_PROCESO,
+					CVE_LINEA_NEGOCIO,
+					CVE_NOTIFICACION,
+					DES_NOTIFICACION,
+					            	CVE_PROCESO,
+					           	CVE_LINEA_NEGOCIO,
+					            	CVE_NOTIFICACION,
+					            	CVE_MENSAJE,
+					            	CVE_MEDIO_ENVIO,
+					            	SW_ENVIO_AGENTE,
+					            	SW_ENVIO_CLIENTE,
+					            	SW_DXN,
+					            	SW_COB_BANCARIA,
+					            	SW_PAGO_DIRECTO,
+					            	SW_REGLAB_BASE,
+					            	SW_REGLAB_EVENTUAL,
+					            	CVE_TIPO_RESP_CB,
+					            	SW_REINTENTA_CB,
+					                SW_CANAL_ENVIO
+					FROM MXGES_NOTIFICACIONES 
+					WHERE ESTATUS = 'A' 
+					AND (CVE_MEDIO_ENVIO = 'EM' 
+					OR CVE_MEDIO_ENVIO = 'SM')
+				]]>
+			</value>
+		</property>
+
+		<property name="qryFrecuencias">
+			<value>
+				<![CDATA[
+					SELECT 
+					CVE_DIA, 
+					HH_NOTIFICACION, 
+					MM_NOTIFICACION 
+					FROM MXGES_FREC_NOTIFICACIONES 
+					WHERE CVE_NOTIFICACION = ? 
+					AND CVE_PROCESO = ? 
+					AND CVE_LINEA_NEGOCIO = ?
+					AND CVE_MENSAJE = ?
+				]]>
+			</value>
+		</property>
+		
+		<property name="qryItVarProc">
+			<value>
+				<![CDATA[
+					SELECT A.CVE_PROCESO CVE_PROCESO, A.CVE_VARIABLE CVE_VARIABLE, B.COL_FISICA COL_FISICA
+					FROM MXGES_PROC_VARIABLES A, MXGES_CAT_VARIABLES B 
+					WHERE A.CVE_VARIABLE = B.CVE_VARIABLE
+					AND B.ESTATUS = 'A'
+					AND A.CVE_PROCESO = ?
+				]]>
+			</value>
+		</property>
+		
+		
+		
+  		<property name="qryProcCobrancA">
+  			<value>
+  				<![CDATA[
+  					SELECT ROWID ROW_ID,  
+  						ID_REGISTRO REGISTRO, 
+						ID_PROCESO PROCESO, 
+						EMAIL_CLIENTE EMAIL,
+        				ID_NOMINAL NOMINA,
+        				ID_POLIZA POLIZA,
+        				TRANSLATE(TO_CHAR(IMPORTE_01,'999,999,999.99'),',','@') IMPORTE,
+       					REF_BANCARIA REF_BANCARIA,
+       					nvl(NOMBRE_CLIENTE,'') NOMBRE,
+       					nvl(APELLIDO_PATERNO_CLIENTE,'') PATERNO,
+       					nvl(APELLIDO_MATERNO_CLIENTE,'') MATERNO,
+       					nvl(TO_CHAR(FEC_DIA_COBRO,'DD/MM/YYYY'),'') FEC_COBRO
+       				FROM MXGES_ENVIO_NOTIFICACIONES A
+					WHERE CVE_RESP_BANCARIA IN ('1', '3', '4', '44', '5','8')
+					AND CVE_ESTATUS = 'PE'
+					AND FEC_CREACION >= TRUNC(SYSDATE - ?)
+					AND EMAIL_CLIENTE IS NOT NULL
+					AND ROWNUM < (SELECT TO_NUMBER(VALOR_PARAMETRO) FROM MXGES_CAT_PARAMETROS WHERE CVE_PARAMETRO = 'P_LIMITE_NOTIFICACIONES')
+					AND NOT EXISTS
+						(SELECT NULL
+						 FROM MXGES_EXCLUSIONES_RETUP EXC
+						 WHERE EXC.CVE_PROCESO = (SELECT CLAVE
+												  FROM MXGES_V_METATABLAS1 VAL2
+												  WHERE VAL2.DESCRIPCION = A.CVE_PROCESO_ORIGEN
+												  AND VAL2.CVE_TABLA = 'CAT_HOMOLOGAPROC')
+    					 AND EXC.CVE_LINEA_NEGOCIO = A.CVE_LINEA_NEGOCIO
+    					 AND EXC.ID_RETENEDOR = A.ID_RETENEDOR
+    					 AND EXC.ID_UNIDAD_PAGO = A.ID_UNIDAD_PAGO
+    					 AND EXC.ID_MEDIO_ENVIO = 'EM')
+    				AND NOT EXISTS
+						(SELECT NULL
+						 FROM MXGES_EXCLUSIONES_RETUP_CT EXC
+						 WHERE EXC.CVE_PROCESO = (SELECT CLAVE
+ 												  FROM MXGES_V_METATABLAS1 VAL2
+												  WHERE VAL2.DESCRIPCION = A.CVE_PROCESO_ORIGEN
+												  AND VAL2.CVE_TABLA = 'CAT_HOMOLOGAPROC')
+    	 				 AND EXC.CVE_LINEA_NEGOCIO = A.CVE_LINEA_NEGOCIO
+    	 				 AND EXC.ID_RETENEDOR_CT = A.ID_RETENEDOR_CT
+    	 				 AND EXC.ID_UNIDAD_PAGO_CT = A.ID_UNIDAD_PAGO_CT
+    	 				 AND EXC.ID_MEDIO_ENVIO = 'EM')
+    	 				 AND     ROWNUM <=(?+1)
+					ORDER BY FEC_CREACION ASC
+  				]]>
+  			</value>
+  		</property>
+  		
+  		<property name="updEnvioNotificaciones">
+  			<value>
+  				<![CDATA[
+  					UPDATE MXGES_ENVIO_NOTIFICACIONES
+					SET CVE_ESTATUS = 'EN'
+					WHERE ID_REGISTRO = ?
+					AND ID_PROCESO = ?
+					AND ID_NOMINAL = ?
+					AND ID_POLIZA = ?
+  				]]>
+  			</value>
+  		</property>
+  		
+  		<property name="insInfoEnvios">
+  			<value>
+  				<![CDATA[
+  					INSERT INTO  MXGES_INFO_ENVIOS (ID_ENVIO,ENVIO_TO,SUBJECT,BODY,FEC_ENVIO,ESTATUS,FEC_REGISTRO,ID_REGISTRO,ID_PROCESO,CVE_MEDIO_ENVIO,ENVIO_CC,
+						NOMBRE_ARCHIVO,COL_01,COL_02,COL_03,COL_04,COL_05,COL_06,COL_07,COL_08,COL_09,COL_10,DES_MENSAJE_ERROR)
+					VALUES (ENVIOS_ID_SEQ.NEXTVAL, ?, ?, ?, SYSDATE, 'A', SYSDATE,
+						?, ?, 'EM',NULL,NULL, ?, ?,'CL', ?,'PROC_COBRBANC',
+						NULL,NULL,NULL,NULL,NULL,?)
+  				]]>
+  			</value>
+  		</property>
+  		
+  		<property name="insInfoEnviosNull">
+  			<value>
+  				<![CDATA[
+  					INSERT INTO  MXGES_INFO_ENVIOS (ID_ENVIO,ENVIO_TO,SUBJECT,BODY,FEC_ENVIO,ESTATUS,FEC_REGISTRO,ID_REGISTRO,ID_PROCESO,CVE_MEDIO_ENVIO,ENVIO_CC,
+						NOMBRE_ARCHIVO,COL_01,COL_02,COL_03,COL_04,COL_05,COL_06,COL_07,COL_08,COL_09,COL_10,DES_MENSAJE_ERROR)
+					VALUES (ENVIOS_ID_SEQ.NEXTVAL, ?, ?, ?, SYSDATE, 'A', SYSDATE,
+						?, ?, 'EM',NULL,NULL, ?, ?,'CL', 'FC','PROC_COBRBANC',
+						NULL,NULL,NULL,NULL,NULL,?)
+  				]]>
+  			</value>
+  		</property>
+  		
+  		<property name="qryProcCobrancR">
+  			<value>
+  				<![CDATA[
+  					SELECT ROWID ROW_ID,  
+  						ID_REGISTRO REGISTRO, 
+						ID_PROCESO PROCESO, 
+						EMAIL_CLIENTE EMAIL,
+        				ID_NOMINAL NOMINA,
+        				ID_POLIZA POLIZA,
+        				TRANSLATE(TO_CHAR(IMPORTE_01,'999,999,999.99'),',','@') IMPORTE,
+       					REF_BANCARIA REF_BANCARIA,
+       					NOMBRE_CLIENTE NOMBRE,
+       					APELLIDO_PATERNO_CLIENTE PATERNO,
+       					APELLIDO_MATERNO_CLIENTE MATERNO,
+       					TO_CHAR(FEC_DIA_COBRO,'DD/MM/YYYY') AS FEC_DIA_COBRO
+       				FROM MXGES_ENVIO_NOTIFICACIONES A
+					WHERE CVE_RESP_BANCARIA IN ('41')
+					AND CVE_ESTATUS = 'PE'
+					AND FEC_CREACION >= TRUNC(SYSDATE - ?)
+					AND EMAIL_CLIENTE IS NOT NULL
+					AND ROWNUM < (SELECT TO_NUMBER(VALOR_PARAMETRO) FROM MXGES_CAT_PARAMETROS WHERE CVE_PARAMETRO = 'P_LIMITE_NOTIFICACIONES')
+					AND NOT EXISTS
+						(SELECT NULL
+						 FROM MXGES_EXCLUSIONES_RETUP EXC
+						 WHERE EXC.CVE_PROCESO = (SELECT CLAVE
+												  FROM MXGES_V_METATABLAS1 VAL2
+												  WHERE VAL2.DESCRIPCION = A.CVE_PROCESO_ORIGEN
+												  AND VAL2.CVE_TABLA = 'CAT_HOMOLOGAPROC')
+    					 AND EXC.CVE_LINEA_NEGOCIO = A.CVE_LINEA_NEGOCIO
+    					 AND EXC.ID_RETENEDOR = A.ID_RETENEDOR
+    					 AND EXC.ID_UNIDAD_PAGO = A.ID_UNIDAD_PAGO
+    					 AND EXC.ID_MEDIO_ENVIO = 'EM')
+    				AND NOT EXISTS
+						(SELECT NULL
+						 FROM MXGES_EXCLUSIONES_RETUP_CT EXC
+						 WHERE EXC.CVE_PROCESO = (SELECT CLAVE
+ 												  FROM MXGES_V_METATABLAS1 VAL2
+												  WHERE VAL2.DESCRIPCION = A.CVE_PROCESO_ORIGEN
+												  AND VAL2.CVE_TABLA = 'CAT_HOMOLOGAPROC')
+    	 				 AND EXC.CVE_LINEA_NEGOCIO = A.CVE_LINEA_NEGOCIO
+    	 				 AND EXC.ID_RETENEDOR_CT = A.ID_RETENEDOR_CT
+    	 				 AND EXC.ID_UNIDAD_PAGO_CT = A.ID_UNIDAD_PAGO_CT
+    	 				 AND EXC.ID_MEDIO_ENVIO = 'EM')
+    	 				 AND     ROWNUM <=(?+1)
+					ORDER BY FEC_CREACION ASC
+  				]]>
+  			</value>
+  		</property>
+  		
+  		<property name="qryProcCobrancRNULL">
+  			<value>
+  				<![CDATA[
+  					SELECT ROWID ROW_ID,  
+  						ID_REGISTRO REGISTRO, 
+						ID_PROCESO PROCESO, 
+						EMAIL_CLIENTE EMAIL,
+        				ID_NOMINAL NOMINA,
+        				ID_POLIZA POLIZA,
+        				TO_CHAR(IMPORTE_01,'999,999,999.99') IMPORTE,
+       					REF_BANCARIA REF_BANCARIA,
+       					NOMBRE_CLIENTE NOMBRE,
+       					APELLIDO_PATERNO_CLIENTE PATERNO,
+       					APELLIDO_MATERNO_CLIENTE MATERNO,
+       					FEC_DIA_COBRO FEC_COBRO
+       				FROM MXGES_ENVIO_NOTIFICACIONES A
+					WHERE CVE_RESP_BANCARIA IN ('41')
+					AND CVE_ESTATUS = 'PE'
+					AND FEC_CREACION >= TRUNC(SYSDATE - ?)
+					AND EMAIL_CLIENTE IS NULL
+					AND ROWNUM < (SELECT TO_NUMBER(VALOR_PARAMETRO) FROM MXGES_CAT_PARAMETROS WHERE CVE_PARAMETRO = 'P_LIMITE_NOTIFICACIONES')
+					AND NOT EXISTS
+						(SELECT NULL
+						 FROM MXGES_EXCLUSIONES_RETUP EXC
+						 WHERE EXC.CVE_PROCESO = (SELECT CLAVE
+												  FROM MXGES_V_METATABLAS1 VAL2
+												  WHERE VAL2.DESCRIPCION = A.CVE_PROCESO_ORIGEN
+												  AND VAL2.CVE_TABLA = 'CAT_HOMOLOGAPROC')
+    					 AND EXC.CVE_LINEA_NEGOCIO = A.CVE_LINEA_NEGOCIO
+    					 AND EXC.ID_RETENEDOR = A.ID_RETENEDOR
+    					 AND EXC.ID_UNIDAD_PAGO = A.ID_UNIDAD_PAGO
+    					 AND EXC.ID_MEDIO_ENVIO = 'EM')
+    				AND NOT EXISTS
+						(SELECT NULL
+						 FROM MXGES_EXCLUSIONES_RETUP_CT EXC
+						 WHERE EXC.CVE_PROCESO = (SELECT CLAVE
+ 												  FROM MXGES_V_METATABLAS1 VAL2
+												  WHERE VAL2.DESCRIPCION = A.CVE_PROCESO_ORIGEN
+												  AND VAL2.CVE_TABLA = 'CAT_HOMOLOGAPROC')
+    	 				 AND EXC.CVE_LINEA_NEGOCIO = A.CVE_LINEA_NEGOCIO
+    	 				 AND EXC.ID_RETENEDOR_CT = A.ID_RETENEDOR_CT
+    	 				 AND EXC.ID_UNIDAD_PAGO_CT = A.ID_UNIDAD_PAGO_CT
+    	 				 AND EXC.ID_MEDIO_ENVIO = 'EM')
+					ORDER BY FEC_CREACION ASC
+  				]]>
+  			</value>
+  		</property>
+  		
+  		<property name="qryProcCobrancANULL">
+  			<value>
+  				<![CDATA[
+  					SELECT ROWID ROW_ID,  
+  						ID_REGISTRO REGISTRO, 
+						ID_PROCESO PROCESO, 
+						EMAIL_CLIENTE EMAIL,
+        				ID_NOMINAL NOMINA,
+        				ID_POLIZA POLIZA,
+        				TO_CHAR(IMPORTE_01,'999,999,999.99') IMPORTE,
+       					REF_BANCARIA REF_BANCARIA,
+       					NOMBRE_CLIENTE NOMBRE,
+       					APELLIDO_PATERNO_CLIENTE PATERNO,
+       					APELLIDO_MATERNO_CLIENTE MATERNO,
+       					FEC_DIA_COBRO FEC_COBRO
+       				FROM MXGES_ENVIO_NOTIFICACIONES A
+					WHERE CVE_RESP_BANCARIA IN ('1', '3', '4', '44', '5','8')
+					AND CVE_ESTATUS = 'PE'
+					AND FEC_CREACION >= TRUNC(SYSDATE - ?)
+					AND EMAIL_CLIENTE IS NULL
+					AND ROWNUM < (SELECT TO_NUMBER(VALOR_PARAMETRO) FROM MXGES_CAT_PARAMETROS WHERE CVE_PARAMETRO = 'P_LIMITE_NOTIFICACIONES')
+					AND NOT EXISTS
+						(SELECT NULL
+						 FROM MXGES_EXCLUSIONES_RETUP EXC
+						 WHERE EXC.CVE_PROCESO = (SELECT CLAVE
+												  FROM MXGES_V_METATABLAS1 VAL2
+												  WHERE VAL2.DESCRIPCION = A.CVE_PROCESO_ORIGEN
+												  AND VAL2.CVE_TABLA = 'CAT_HOMOLOGAPROC')
+    					 AND EXC.CVE_LINEA_NEGOCIO = A.CVE_LINEA_NEGOCIO
+    					 AND EXC.ID_RETENEDOR = A.ID_RETENEDOR
+    					 AND EXC.ID_UNIDAD_PAGO = A.ID_UNIDAD_PAGO
+    					 AND EXC.ID_MEDIO_ENVIO = 'EM')
+    				AND NOT EXISTS
+						(SELECT NULL
+						 FROM MXGES_EXCLUSIONES_RETUP_CT EXC
+						 WHERE EXC.CVE_PROCESO = (SELECT CLAVE
+ 												  FROM MXGES_V_METATABLAS1 VAL2
+												  WHERE VAL2.DESCRIPCION = A.CVE_PROCESO_ORIGEN
+												  AND VAL2.CVE_TABLA = 'CAT_HOMOLOGAPROC')
+    	 				 AND EXC.CVE_LINEA_NEGOCIO = A.CVE_LINEA_NEGOCIO
+    	 				 AND EXC.ID_RETENEDOR_CT = A.ID_RETENEDOR_CT
+    	 				 AND EXC.ID_UNIDAD_PAGO_CT = A.ID_UNIDAD_PAGO_CT
+    	 				 AND EXC.ID_MEDIO_ENVIO = 'EM')
+					ORDER BY FEC_CREACION ASC
+  				]]>
+  			</value>
+  		</property>
+  		
+  		<property name="qryProcRenew">
+  			<value><!--"nombreCliente");  //COLUMN5
+		 template= template.replace("{{2}}", "token");   // COLUMN6
+		 template= template.replace("{{3}}", "polizaCliente");  // ID_POLIZA
+		 template= template.replace("{{4}}", "correo_cliente");  // EMAIL_CLIENTE -->
+  				<![CDATA[
+  					SELECT 
+  						   A.ID_PROCESO,
+  						   A.ID_REGISTRO,
+  						   A.CVE_PROCESO_ORIGEN,
+					       A.EMAIL_CLIENTE EMAIL,
+					       A.ID_POLIZA POLIZA,
+					       NVL(A.NOMBRE_CLIENTE,'') NOMBRE,
+					       NVL(A.APELLIDO_PATERNO_CLIENTE,'') PATERNO,
+					       NVL(A.APELLIDO_MATERNO_CLIENTE,'') MATERNO,
+					       TO_CHAR(A.COLUMN_5) COLUMN_5_CHAR,
+					       TO_CHAR(A.COLUMN_6) COLUMN_6_CHAR
+					FROM MXGES_ENVIO_NOTIFICACIONES A
+					 WHERE A.CVE_PROCESO_ORIGEN = 'RENEW'
+					   AND CVE_ESTATUS = 'PE'
+					   AND FEC_CREACION >= TRUNC(SYSDATE - 1)---retroactividad cuantos dias atras toma notificaciones
+					AND EMAIL_CLIENTE IS NOT NULL
+					AND ROWNUM < (SELECT TO_NUMBER(VALOR_PARAMETRO) FROM MXGES_CAT_PARAMETROS WHERE CVE_PARAMETRO = 'P_LIMITE_NOTIFICACIONES')
+					AND NOT EXISTS
+					                 (SELECT NULL
+					                   FROM MXGES_EXCLUSIONES_RETUP EXC
+					                   WHERE EXC.CVE_PROCESO = (SELECT CLAVE
+					                                             FROM MXGES_V_METATABLAS1 VAL2
+					                                             WHERE VAL2.DESCRIPCION = A.CVE_PROCESO_ORIGEN
+					                                             AND VAL2.CVE_TABLA = 'CAT_HOMOLOGAPROC')
+					                     AND EXC.CVE_LINEA_NEGOCIO = A.CVE_LINEA_NEGOCIO
+					                     AND EXC.ID_RETENEDOR = A.ID_RETENEDOR
+					                     AND EXC.ID_UNIDAD_PAGO = A.ID_UNIDAD_PAGO
+					                     AND EXC.ID_MEDIO_ENVIO = 'EM')
+					   AND NOT EXISTS
+					                 (SELECT NULL
+					                   FROM MXGES_EXCLUSIONES_RETUP EXC
+					                   WHERE EXC.CVE_PROCESO = (SELECT CLAVE
+					                                             FROM MXGES_V_METATABLAS1 VAL2
+					                                             WHERE VAL2.DESCRIPCION = A.CVE_PROCESO_ORIGEN
+					                                             AND VAL2.CVE_TABLA = 'CAT_HOMOLOGAPROC')
+					                     AND EXC.CVE_LINEA_NEGOCIO = A.CVE_LINEA_NEGOCIO
+					                     AND EXC.ID_RETENEDOR = A.ID_RETENEDOR
+					                     AND EXC.ID_UNIDAD_PAGO = A.ID_UNIDAD_PAGO
+					                     AND EXC.ID_MEDIO_ENVIO = 'SM')
+					   AND ROWNUM < (SELECT TO_NUMBER(VALOR_PARAMETRO) FROM MXGES_CAT_PARAMETROS WHERE CVE_PARAMETRO = 'P_LIMITE_NOTIFICACIONES') --limite
+					ORDER BY FEC_CREACION ASC
+											       
+  				]]>
+  			</value>
+  		</property>
+  		
+  		<property name="updRegistrosRenew">
+			<value>
+                <![CDATA[
+					 UPDATE MXGES_ENVIO_NOTIFICACIONES
+						SET CVE_ESTATUS         	= 'EN'
+						  WHERE ID_PROCESO 			= ?
+						  AND ID_REGISTRO     		= ?	
+						  AND CVE_ESTATUS      		= 'PE'	
+						  AND CVE_PROCESO_ORIGEN 	= ?
+  				]]>
+			</value>
+		</property>
+		
+  		<property name="qryProcITrans">
+  			<value>
+  				<![CDATA[
+  					SELECT 
+					( ? ) CAD_ARCHIVO
+					FROM MXGES_ENVIO_NOTIFICACIONES
+					WHERE CVE_PROCESO_ORIGEN = (SELECT VALOR_01 FROM MXGES_CAT_VALORES 
+					                              WHERE CVE_TABLA = 'CAT_HOMOLOGAPROC' 
+					                              AND CLAVE_01 = ? ) --'PROC_RENEW')
+					AND CVE_ESTATUS = 'PE'
+					AND (TEL_MOVIL_CLIENTE IS NOT NULL OR EMAIL_CLIENTE IS NOT NULL)
+					AND FEC_CREACION >= TRUNC(SYSDATE - 1)      
+  				]]>
+  			</value>
+  		</property>
+  		<property name="qryITMensaje">
+  			<value>
+  				<![CDATA[
+  					SELECT CUERPO FROM MXGES_MENSAJES WHERE CVE_MENSAJE = ?    
+  				]]>
+  			</value>
+  		</property>
+  		<property name="qryITNombreFile">
+  			<value>
+  				<![CDATA[
+  					SELECT VALOR_01 FROM MXGES_CAT_VALORES 
+					WHERE CVE_TABLA = 'CAT_HOMOLOGAPROC' 
+					AND CLAVE_01 = ?    
+  				]]>
+  			</value>
+  		</property>
+  		<property name="qryITupdateRegistros">
+  			<value>
+  				<![CDATA[
+  					UPDATE MXGES_ENVIO_NOTIFICACIONES T1 
+					SET T1.CVE_ESTATUS = 'EN'
+					WHERE EXISTS (SELECT A.CVE_ESTATUS
+									FROM MXGES_ENVIO_NOTIFICACIONES A
+									WHERE  T1.ID_PROCESO = A.ID_PROCESO
+									AND A.CVE_PROCESO_ORIGEN = (SELECT VALOR_01 FROM MXGES_CAT_VALORES 
+									                              WHERE CVE_TABLA = 'CAT_HOMOLOGAPROC' 
+									                              AND CLAVE_01 = ?)
+									AND CVE_ESTATUS = 'PE'
+									AND (A.TEL_MOVIL_CLIENTE IS NOT NULL OR A.EMAIL_CLIENTE IS NOT NULL)
+									AND FEC_CREACION >= TRUNC(SYSDATE - 1))   
+  				]]>
+  			</value>
+  		</property>
+  		
+  		
+	</bean>
+</beans>

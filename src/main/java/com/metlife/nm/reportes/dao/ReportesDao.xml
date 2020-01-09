@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<beans>
+	<bean id="ReportesDao" class="com.metlife.nm.reportes.dao.ReportesDaoImpl">
+		<property name="dataSource" ref="dataSource"></property>
+
+		<property name="qryCatDestinatario">
+			<value>
+				<![CDATA[
+					 SELECT VAL.CLAVE_01 KEY , VAL.VALOR_01 VALUE
+					   FROM MXGES_CAT_VALORES VAL, MXGES_CAT_METATABLAS MET
+					  WHERE VAL.CVE_TABLA = MET.CVE_TABLA
+					  AND VAL.ESTATUS = 'A'
+					AND MET.CVE_TABLA     = 'CAT_DESTINATARIO'
+				]]>
+			</value>
+		</property>
+		
+		<property name="qryDestinatario">
+			<value>
+				<![CDATA[
+					SELECT SW_ENVIO_AGENTE , SW_ENVIO_PROMOT
+					FROM MXGES_NOTIFICACIONES
+					WHERE CVE_NOTIFICACION = ?
+					AND CVE_PROCESO        = ?
+					AND CVE_LINEA_NEGOCIO  = ?
+					AND CVE_MENSAJE        = ?
+				]]>
+			</value>
+		</property>
+		
+		
+		<property name="qryReporte">
+			<value>
+				<![CDATA[
+					SELECT CVE_PROCESO, CVE_LINEA_NEGOCIO , ESTATUS , PRIORIDAD
+					FROM MXGES_CAT_PROCESOS
+					WHERE ESTATUS   = 'I'
+					AND CVE_PROCESO = 'PROC_CALIDAD'
+				]]>
+			</value>
+		</property>
+
+		<property name="qryConf">
+			<value>
+				<![CDATA[
+					 SELECT CVE_NOTIFICACION, CVE_PROCESO , CVE_LINEA_NEGOCIO, CVE_MENSAJE
+   						FROM MXGES_NOTIFICACIONES where CVE_PROCESO = 'PROC_CALIDAD'
+				]]>
+			</value>
+		</property>
+
+		<property name="qryDiasReporte">
+			<value>
+				<![CDATA[
+					   SELECT ID_FRECUENCIA , DIA_ENVIO
+						   FROM MXGES_FREC_NOTIFICACIONES
+						  WHERE CVE_PROCESO = 'PROC_CALIDAD'
+						ORDER BY ID_FRECUENCIA
+				]]>
+			</value>
+		</property>
+		<property name="getLast">
+			<value>
+					<![CDATA[
+						SELECT MAX(ID_FRECUENCIA ) FROM MXGES_FREC_NOTIFICACIONES
+					]]>
+			</value>
+		</property>
+		<property name="insReporteCalidad">
+			<value>
+				<![CDATA[
+					 INSERT
+					   INTO MXGES_FREC_NOTIFICACIONES
+					  (
+					    CVE_NOTIFICACION, CVE_PROCESO, CVE_LINEA_NEGOCIO, CVE_MENSAJE ,
+					    ID_FRECUENCIA   , DIA_ENVIO  , CVE_FRECUENCIA_ENVIO
+					  )
+					  VALUES
+					  (
+					    ?, ?,   ?, ?,
+					    ?, ?, 'D'
+					  )
+				]]>
+			</value>
+		</property>
+		<property name="updReporteCalidad">
+			<value>
+				<![CDATA[
+				   UPDATE MXGES_FREC_NOTIFICACIONES
+					SET DIA_ENVIO       = ?
+					  WHERE CVE_PROCESO = 'PROC_CALIDAD'
+					AND ID_FRECUENCIA   = ?
+  				]]>
+			</value>
+		</property>
+		<property name="updDestinatario">
+			<value>
+				<![CDATA[
+				    UPDATE MXGES_NOTIFICACIONES
+					SET SW_ENVIO_AGENTE      =?, SW_ENVIO_PROMOT = ?
+					  WHERE CVE_NOTIFICACION = ?
+					AND CVE_PROCESO          = ?
+					AND CVE_LINEA_NEGOCIO    = ?
+					AND CVE_MENSAJE          = ?
+  				]]>
+			</value>
+		</property>
+	</bean>
+</beans>	

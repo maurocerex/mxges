@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+	<beans> 
+		<bean id="RolesDao"
+		class="com.metlife.nm.roles.dao.RolesDaoImpl">
+			<property name="dataSource" ref="dataSource"></property>
+			<property name="qryPantallas">
+				<value>
+					<![CDATA[
+						SELECT CV.CVE_ROL , CV.ID_PANTALLA, PANT.DES_PANTALLA PANTALLA ,
+							PANT.DES_MENU MENU, CV.SW_CONSULTA VISIBLE, PANT.OBSERVACIONES
+						FROM MXGES_SEG_ROL_PANT CV, MXGES_SEG_PANTALLAS PANT
+						WHERE CVE_ROL      = ?
+						AND CV.ID_PANTALLA = PANT.ID_PANTALLA
+						ORDER BY ID_PANTALLA
+					]]>
+				</value>
+			</property>
+			
+			<property name="updPantalla">
+				<value>
+					<![CDATA[
+						UPDATE MXGES_SEG_ROL_PANT
+						SET SW_CONSULTA = ?
+						WHERE CVE_ROL   = ?
+						AND ID_PANTALLA = ?
+					]]>
+				</value>
+			</property>
+			
+			
+
+		</bean>
+	</beans>
+	

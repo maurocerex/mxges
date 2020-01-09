@@ -1,0 +1,852 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<wsdl:definitions name="wsdHubComunicacionesSF" targetNamespace="http://www.metlife.com.mx/ws/HubComunicaciones" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soapjms="http://www.w3.org/2010/soapjms/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://www.metlife.com.mx/ws/HubComunicaciones" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:HDR1="http://www.metlife.com.mx/schema/SendMail/SendMailWS" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:HDR2="http://www.metlife.com.mx/schema/MassiveProcess/MassiveProcessWS" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:HDR3="http://www.metlife.com.mx/schema/Select/SelectWS" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/">
+ <wsdl:types>
+ <xsd:schema targetNamespace="http://www.metlife.com.mx/schema/Select/SelectWS" xmlns:ns2="http://www.metlife.com.mx/schema/Select/SelectWS" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="TXLifeRequest" type="ns2:TXLifeRequest_Type" /> 
+  <xsd:element name="TXLifeResponse" type="ns2:TXLifeResponse_Type" /> 
+ <xsd:complexType name="TXLifeRequest_Type">
+ <xsd:sequence>
+  <xsd:element name="TransRefGUID" type="ns2:TransRefGUID_Type" /> 
+  <xsd:element name="TransType" type="ns2:TransType_Type" /> 
+  <xsd:element name="TransExeDate" type="ns2:TransExeDate_Type" /> 
+  <xsd:element name="TransExeTime" type="ns2:TransExeTime_Type" /> 
+  <xsd:element minOccurs="0" name="TestIndicator" type="ns2:TestIndicator_Type" /> 
+  <xsd:element name="OLifE" type="ns2:OLifE_Type" /> 
+  <xsd:element name="OLifEExtension" type="ns2:OLifEExtension_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="TransRefGUID_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[azAZ09\]+" /> 
+  <xsd:maxLength value="17" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="TransType_Type">
+ <xsd:simpleContent>
+ <xsd:extension base="xsd:string">
+  <xsd:attribute name="tc" type="ns2:TC3_Type" use="required" /> 
+  </xsd:extension>
+  </xsd:simpleContent>
+  </xsd:complexType>
+ <xsd:simpleType name="TC3_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:maxLength value="3" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="TransExeDate_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]{4}(((0[13578]|(10|12))(0[19]|[12][09]|3[01]))|(02(0[19]|[12][09]))|((0[469]|11)(0[19]|[12][09]|30)))" /> 
+  <xsd:maxLength value="10" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="TransExeTime_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="(([01]?[09])|([2][03])):([05]?[09])(:([05]?[09]))?" /> 
+  <xsd:maxLength value="8" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="TestIndicator_Type">
+ <xsd:simpleContent>
+ <xsd:extension base="xsd:string">
+  <xsd:attribute name="tc" type="ns2:TC1_Type" use="required" /> 
+  </xsd:extension>
+  </xsd:simpleContent>
+  </xsd:complexType>
+ <xsd:simpleType name="TC1_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:length value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="OLifE_Type">
+ <xsd:sequence>
+  <xsd:element name="Field" type="ns2:Field_Type" /> 
+  <xsd:element minOccurs="0" name="QueryDate" type="ns2:QueryDate_Type" /> 
+  <xsd:element name="LegacyID" type="ns2:LegacyID_Type" /> 
+  <xsd:element minOccurs="0" name="FiledID" type="ns2:FiledID_Type" /> 
+  <xsd:element minOccurs="0" name="RecordID" type="ns2:RecordID_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="Field_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="QueryDate_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]{2}/[09]{2}/[09]{4}" /> 
+  <xsd:length value="10" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="LegacyID_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="FiledID_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="RecordID_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="OLifEExtension_Type">
+ <xsd:sequence>
+  <xsd:element name="SrceCountry" type="ns2:SrceCountry_Type" /> 
+  <xsd:element name="SrceCompany" type="ns2:SrceCompany_Type" /> 
+  <xsd:element name="SrceSystem" type="ns2:SrceSystem_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="SrceCountry_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[AZ]+" /> 
+  <xsd:maxLength value="2" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="SrceCompany_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[AZ]+" /> 
+  <xsd:maxLength value="10" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="SrceSystem_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:maxLength value="3" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="TXLifeResponse_Type">
+ <xsd:sequence>
+  <xsd:element name="TransRefGUID" type="ns2:TransRefGUID_Type" /> 
+  <xsd:element name="TransType" type="ns2:TransType_Type" /> 
+  <xsd:element name="TransExeDate" type="ns2:TransExeDate_Type" /> 
+  <xsd:element name="TransExeTime" type="ns2:TransExeTime_Type" /> 
+  <xsd:element name="TransResult" type="ns2:TransResult_Type" /> 
+  <xsd:element name="OLifE" type="ns2:OLifEResponse_Type" /> 
+  <xsd:element name="OLifEExtension" type="ns2:OLifEExtensionResponse_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="TransResult_Type">
+ <xsd:sequence>
+  <xsd:element name="ResultCode" type="ns2:ResultCode_Type" /> 
+  <xsd:element minOccurs="0" name="RecordsFound" type="ns2:RecordsFound_Type" /> 
+  <xsd:element minOccurs="0" name="ResultInfoArray" type="ns2:ResultInfoArray_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="ResultCode_Type">
+ <xsd:simpleContent>
+ <xsd:extension base="xsd:string">
+  <xsd:attribute name="tc" type="ns2:TC1_Type" use="required" /> 
+  </xsd:extension>
+  </xsd:simpleContent>
+  </xsd:complexType>
+ <xsd:simpleType name="RecordsFound_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="ResultInfoArray_Type">
+ <xsd:sequence>
+  <xsd:element maxOccurs="unbounded" minOccurs="0" name="ResultInfo" type="ns2:ResultInfo_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="ResultInfo_Type">
+ <xsd:sequence>
+  <xsd:element minOccurs="0" name="ResultInfoCode" type="ns2:ResultInfoCode_Type" /> 
+  <xsd:element name="ResultInfoDesc" type="xsd:string" /> 
+  <xsd:element name="ResultInfoSysMessageCode" type="xsd:string" /> 
+  <xsd:element name="ResultInfoSeverity" type="ns2:ResultInfoSeverity_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="ResultInfoCode_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:maxLength value="4" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="ResultInfoSeverity_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:length value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="OLifEResponse_Type">
+ <xsd:sequence>
+  <xsd:element minOccurs="0" name="Results" type="ns2:Results_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="Results_Type">
+ <xsd:sequence>
+  <xsd:element maxOccurs="unbounded" name="Record" type="ns2:Record_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="Record_Type">
+ <xsd:sequence>
+  <xsd:element name="Item" type="ns2:Item_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="Item_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="OLifEExtensionResponse_Type">
+ <xsd:sequence>
+  <xsd:element name="TxnId" type="ns2:TxnId_Type" /> 
+  <xsd:element name="SrceCountry" type="ns2:SrceCountry_Type" /> 
+  <xsd:element name="SrceCompany" type="ns2:SrceCompany_Type" /> 
+  <xsd:element name="SrceSystem" type="ns2:SrceSystem_Type" /> 
+  <xsd:element minOccurs="0" name="ResultInfoErrorType" type="ns2:ResultInfoErrorType_Type" /> 
+  <xsd:element name="TransElapsedExeTime" type="ns2:TransElapsedExeTime_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="TxnId_Type">
+  <xsd:restriction base="xsd:long" /> 
+  </xsd:simpleType>
+ <xsd:simpleType name="ResultInfoErrorType_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[AZ]+" /> 
+  <xsd:length value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="TransElapsedExeTime_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="(([01]?[09])|([2][03])):([05]?[09]):([05]?[09]).([09]{3})?" /> 
+  <xsd:maxLength value="12" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+  </xsd:schema>
+ <xsd:schema targetNamespace="http://www.metlife.com.mx/schema/MassiveProcess/MassiveProcessWS" xmlns:ns="http://www.metlife.com.mx/schema/MassiveProcess/MassiveProcessWS" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="TXLifeRequest" type="ns:TXLifeRequest_Type" /> 
+  <xsd:element name="TXLifeResponse" type="ns:TXLifeResponse_Type" /> 
+ <xsd:complexType name="TXLifeRequest_Type">
+ <xsd:sequence>
+  <xsd:element name="TransRefGUID" type="ns:TransRefGUID_Type" /> 
+  <xsd:element name="TransType" type="ns:TransType_Type" /> 
+  <xsd:element name="TransExeDate" type="ns:TransExeDate_Type" /> 
+  <xsd:element name="TransExeTime" type="ns:TransExeTime_Type" /> 
+  <xsd:element minOccurs="0" name="TestIndicator" type="ns:TestIndicator_Type" /> 
+  <xsd:element name="OLifE" type="ns:OLifE_Type" /> 
+  <xsd:element name="OLifEExtension" type="ns:OLifEExtension_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="TransRefGUID_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[azAZ09\]+" /> 
+  <xsd:maxLength value="17" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="TransType_Type">
+ <xsd:simpleContent>
+ <xsd:extension base="xsd:string">
+  <xsd:attribute name="tc" type="ns:TC3_Type" use="required" /> 
+  </xsd:extension>
+  </xsd:simpleContent>
+  </xsd:complexType>
+ <xsd:simpleType name="TC3_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:maxLength value="3" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="TransExeDate_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]{4}(((0[13578]|(10|12))(0[19]|[12][09]|3[01]))|(02(0[19]|[12][09]))|((0[469]|11)(0[19]|[12][09]|30)))" /> 
+  <xsd:maxLength value="10" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="TransExeTime_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="(([01]?[09])|([2][03])):([05]?[09])(:([05]?[09]))?" /> 
+  <xsd:maxLength value="8" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="TestIndicator_Type">
+ <xsd:simpleContent>
+ <xsd:extension base="xsd:string">
+  <xsd:attribute name="tc" type="ns:TC1_Type" use="required" /> 
+  </xsd:extension>
+  </xsd:simpleContent>
+  </xsd:complexType>
+ <xsd:simpleType name="TC1_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:length value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="OLifE_Type">
+ <xsd:sequence>
+  <xsd:element name="BaseFile" type="ns:BaseFile_Type" /> 
+  <xsd:element name="FileName" type="ns:FileName_Type" /> 
+  <xsd:element name="FileExtension" type="ns:FileExtension_Type" /> 
+  <xsd:element name="FileSize" type="ns:FileSize_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="BaseFile_Type">
+ <xsd:restriction base="xsd:base64Binary">
+  <xsd:minLength value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="FileName_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:minLength value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="FileExtension_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:minLength value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="FileSize_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:minLength value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="OLifEExtension_Type">
+ <xsd:sequence>
+  <xsd:element name="SrceCountry" type="ns:SrceCountry_Type" /> 
+  <xsd:element name="SrceCompany" type="ns:SrceCompany_Type" /> 
+  <xsd:element name="SrceSystem" type="ns:SrceSystem_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="SrceCountry_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[AZ]+" /> 
+  <xsd:maxLength value="2" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="SrceCompany_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[AZ]+" /> 
+  <xsd:maxLength value="10" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="SrceSystem_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:maxLength value="3" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="TXLifeResponse_Type">
+ <xsd:sequence>
+  <xsd:element name="TransRefGUID" type="ns:TransRefGUID_Type" /> 
+  <xsd:element name="TransType" type="ns:TransType_Type" /> 
+  <xsd:element name="TransExeDate" type="ns:TransExeDate_Type" /> 
+  <xsd:element name="TransExeTime" type="ns:TransExeTime_Type" /> 
+  <xsd:element name="TransResult" type="ns:TransResult_Type" /> 
+  <xsd:element name="OLifE" type="ns:OLifEResponse_Type" /> 
+  <xsd:element name="OLifEExtension" type="ns:OLifEExtensionResponse_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="TransResult_Type">
+ <xsd:sequence>
+  <xsd:element name="ResultCode" type="ns:ResultCode_Type" /> 
+  <xsd:element minOccurs="0" name="RecordsFound" type="ns:RecordsFound_Type" /> 
+  <xsd:element minOccurs="0" name="ResultInfoArray" type="ns:ResultInfoArray_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="ResultCode_Type">
+ <xsd:simpleContent>
+ <xsd:extension base="xsd:string">
+  <xsd:attribute name="tc" type="ns:TC1_Type" use="required" /> 
+  </xsd:extension>
+  </xsd:simpleContent>
+  </xsd:complexType>
+ <xsd:simpleType name="RecordsFound_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="ResultInfoArray_Type">
+ <xsd:sequence>
+  <xsd:element maxOccurs="unbounded" minOccurs="0" name="ResultInfo" type="ns:ResultInfo_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="ResultInfo_Type">
+ <xsd:sequence>
+  <xsd:element minOccurs="0" name="ResultInfoCode" type="ns:ResultInfoCode_Type" /> 
+  <xsd:element name="ResultInfoDesc" type="xsd:string" /> 
+  <xsd:element name="ResultInfoSysMessageCode" type="xsd:string" /> 
+  <xsd:element name="ResultInfoSeverity" type="ns:ResultInfoSeverity_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="ResultInfoCode_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:maxLength value="4" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="ResultInfoSeverity_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:length value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="OLifEResponse_Type">
+  <xsd:sequence /> 
+  </xsd:complexType>
+ <xsd:complexType name="OLifEExtensionResponse_Type">
+ <xsd:sequence>
+  <xsd:element name="TxnId" type="ns:TxnId_Type" /> 
+  <xsd:element name="SrceCountry" type="ns:SrceCountry_Type" /> 
+  <xsd:element name="SrceCompany" type="ns:SrceCompany_Type" /> 
+  <xsd:element name="SrceSystem" type="ns:SrceSystem_Type" /> 
+  <xsd:element minOccurs="0" name="ResultInfoErrorType" type="ns:ResultInfoErrorType_Type" /> 
+  <xsd:element name="TransElapsedExeTime" type="ns:TransElapsedExeTime_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="TxnId_Type">
+  <xsd:restriction base="xsd:long" /> 
+  </xsd:simpleType>
+ <xsd:simpleType name="ResultInfoErrorType_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[AZ]+" /> 
+  <xsd:length value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="TransElapsedExeTime_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="(([01]?[09])|([2][03])):([05]?[09]):([05]?[09]).([09]{3})?" /> 
+  <xsd:maxLength value="12" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+  </xsd:schema>
+ <xsd:schema targetNamespace="http://www.metlife.com.mx/schema/SendMail/SendMailWS" xmlns:ns3="http://www.metlife.com.mx/schema/SendMail/SendMailWS" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="TXLifeRequest" type="ns3:TXLifeRequest_Type" /> 
+  <xsd:element name="TXLifeResponse" type="ns3:TXLifeResponse_Type" /> 
+ <xsd:complexType name="TXLifeRequest_Type">
+ <xsd:sequence>
+  <xsd:element name="TransRefGUID" type="ns3:TransRefGUID_Type" /> 
+  <xsd:element name="TransType" type="ns3:TransType_Type" /> 
+  <xsd:element name="TransExeDate" type="ns3:TransExeDate_Type" /> 
+  <xsd:element name="TransExeTime" type="ns3:TransExeTime_Type" /> 
+  <xsd:element minOccurs="0" name="TestIndicator" type="ns3:TestIndicator_Type" /> 
+  <xsd:element name="OLifE" type="ns3:OLifE_Type" /> 
+  <xsd:element name="OLifEExtension" type="ns3:OLifEExtension_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="TransRefGUID_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[azAZ09\]+" /> 
+  <xsd:maxLength value="17" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="TransType_Type">
+ <xsd:simpleContent>
+ <xsd:extension base="xsd:string">
+  <xsd:attribute name="tc" type="ns3:TC3_Type" use="required" /> 
+  </xsd:extension>
+  </xsd:simpleContent>
+  </xsd:complexType>
+ <xsd:simpleType name="TC3_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:maxLength value="3" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="TransExeDate_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]{4}(((0[13578]|(10|12))(0[19]|[12][09]|3[01]))|(02(0[19]|[12][09]))|((0[469]|11)(0[19]|[12][09]|30)))" /> 
+  <xsd:maxLength value="10" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="TransExeTime_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="(([01]?[09])|([2][03])):([05]?[09])(:([05]?[09]))?" /> 
+  <xsd:maxLength value="8" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="TestIndicator_Type">
+ <xsd:simpleContent>
+ <xsd:extension base="xsd:string">
+  <xsd:attribute name="tc" type="ns3:TC1_Type" use="required" /> 
+  </xsd:extension>
+  </xsd:simpleContent>
+  </xsd:complexType>
+ <xsd:simpleType name="TC1_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:length value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="OLifE_Type">
+ <xsd:sequence>
+  <xsd:element name="MailData" type="ns3:MailData_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="MailData_Type">
+ <xsd:sequence>
+  <xsd:element name="FieldKeys" type="ns3:FieldKeys_Type" /> 
+  <xsd:element name="ContentType" type="ns3:ContentType_Type" /> 
+  <xsd:element name="ImageKeys" type="ns3:ImageKeys_Type" /> 
+  <xsd:element minOccurs="0" name="BCCs" type="ns3:BCCs_Type" /> 
+  <xsd:element minOccurs="0" name="CCs" type="ns3:CCs_Type" /> 
+  <xsd:element name="From" type="ns3:From_Type" /> 
+  <xsd:element minOccurs="0" name="Reply" type="ns3:Reply_Type" /> 
+  <xsd:element name="SendDt" type="ns3:SendDt_Type" /> 
+  <xsd:element name="Subject" type="ns3:Subject_Type" /> 
+  <xsd:element name="Emails" type="ns3:Emails_Type" /> 
+  <xsd:element name="TemplateName" type="ns3:TemplateName_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="FieldKeys_Type">
+ <xsd:sequence>
+  <xsd:element maxOccurs="unbounded" name="FieldKeyVal" type="ns3:FieldKeyVal_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="FieldKeyVal_Type">
+ <xsd:sequence>
+  <xsd:element name="Item" type="ns3:Item_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="Item_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="ContentType_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="ImageKeys_Type">
+ <xsd:sequence>
+  <xsd:element maxOccurs="unbounded" name="ImageKeyVal" type="ns3:ImageKeyVal_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="ImageKeyVal_Type">
+ <xsd:sequence>
+  <xsd:element name="Item" type="ns3:Item_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="BCCs_Type">
+ <xsd:sequence>
+  <xsd:element maxOccurs="unbounded" name="BCC" type="ns3:BCC_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="BCC_Type">
+ <xsd:sequence>
+  <xsd:element name="Item" type="ns3:Item_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="CCs_Type">
+ <xsd:sequence>
+  <xsd:element maxOccurs="unbounded" name="CC" type="ns3:CC_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="CC_Type">
+ <xsd:sequence>
+  <xsd:element name="Item" type="ns3:Item_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="From_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="Reply_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="SendDt_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="Subject_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="Emails_Type">
+ <xsd:sequence>
+  <xsd:element maxOccurs="unbounded" name="To" type="ns3:To_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="To_Type">
+ <xsd:sequence>
+  <xsd:element name="Item" type="ns3:Item_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="TemplateName_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="OLifEExtension_Type">
+ <xsd:sequence>
+  <xsd:element name="SrceCountry" type="ns3:SrceCountry_Type" /> 
+  <xsd:element name="SrceCompany" type="ns3:SrceCompany_Type" /> 
+  <xsd:element name="SrceSystem" type="ns3:SrceSystem_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="SrceCountry_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[AZ]+" /> 
+  <xsd:maxLength value="2" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="SrceCompany_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[AZ]+" /> 
+  <xsd:maxLength value="10" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="SrceSystem_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:maxLength value="3" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="TXLifeResponse_Type">
+ <xsd:sequence>
+  <xsd:element name="TransRefGUID" type="ns3:TransRefGUID_Type" /> 
+  <xsd:element name="TransType" type="ns3:TransType_Type" /> 
+  <xsd:element name="TransExeDate" type="ns3:TransExeDate_Type" /> 
+  <xsd:element name="TransExeTime" type="ns3:TransExeTime_Type" /> 
+  <xsd:element name="TransResult" type="ns3:TransResult_Type" /> 
+  <xsd:element name="OLifE" type="ns3:OLifEResponse_Type" /> 
+  <xsd:element name="OLifEExtension" type="ns3:OLifEExtensionResponse_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="TransResult_Type">
+ <xsd:sequence>
+  <xsd:element name="ResultCode" type="ns3:ResultCode_Type" /> 
+  <xsd:element minOccurs="0" name="RecordsFound" type="ns3:RecordsFound_Type" /> 
+  <xsd:element minOccurs="0" name="ResultInfoArray" type="ns3:ResultInfoArray_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="ResultCode_Type">
+ <xsd:simpleContent>
+ <xsd:extension base="xsd:string">
+  <xsd:attribute name="tc" type="ns3:TC1_Type" use="required" /> 
+  </xsd:extension>
+  </xsd:simpleContent>
+  </xsd:complexType>
+ <xsd:simpleType name="RecordsFound_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="ResultInfoArray_Type">
+ <xsd:sequence>
+  <xsd:element maxOccurs="unbounded" minOccurs="0" name="ResultInfo" type="ns3:ResultInfo_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="ResultInfo_Type">
+ <xsd:sequence>
+  <xsd:element minOccurs="0" name="ResultInfoCode" type="ns3:ResultInfoCode_Type" /> 
+  <xsd:element name="ResultInfoDesc" type="xsd:string" /> 
+  <xsd:element name="ResultInfoSysMessageCode" type="xsd:string" /> 
+  <xsd:element name="ResultInfoSeverity" type="ns3:ResultInfoSeverity_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="ResultInfoCode_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:maxLength value="4" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="ResultInfoSeverity_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[09]+" /> 
+  <xsd:length value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="OLifEResponse_Type">
+ <xsd:sequence>
+  <xsd:element minOccurs="0" name="RetryNumber" type="ns3:RetryNumber_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="RetryNumber_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:complexType name="OLifEExtensionResponse_Type">
+ <xsd:sequence>
+  <xsd:element name="TxnId" type="ns3:TxnId_Type" /> 
+  <xsd:element name="SrceCountry" type="ns3:SrceCountry_Type" /> 
+  <xsd:element name="SrceCompany" type="ns3:SrceCompany_Type" /> 
+  <xsd:element name="SrceSystem" type="ns3:SrceSystem_Type" /> 
+  <xsd:element minOccurs="0" name="ResultInfoErrorType" type="ns3:ResultInfoErrorType_Type" /> 
+  <xsd:element name="TransElapsedExeTime" type="ns3:TransElapsedExeTime_Type" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:simpleType name="TxnId_Type">
+  <xsd:restriction base="xsd:long" /> 
+  </xsd:simpleType>
+ <xsd:simpleType name="ResultInfoErrorType_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="[AZ]+" /> 
+  <xsd:length value="1" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+ <xsd:simpleType name="TransElapsedExeTime_Type">
+ <xsd:restriction base="xsd:string">
+  <xsd:whiteSpace value="preserve" /> 
+  <xsd:pattern value="(([01]?[09])|([2][03])):([05]?[09]):([05]?[09]).([09]{3})?" /> 
+  <xsd:maxLength value="12" /> 
+  </xsd:restriction>
+  </xsd:simpleType>
+  </xsd:schema>
+ <xsd:schema targetNamespace="http://www.metlife.com.mx/ws/HubComunicaciones" xmlns:ns="http://www.metlife.com.mx/schema/MassiveProcess/MassiveProcessWS" xmlns:ns2="http://www.metlife.com.mx/schema/Select/SelectWS" xmlns:ns3="http://www.metlife.com.mx/schema/SendMail/SendMailWS" xmlns:tns="http://www.metlife.com.mx/ws/HubComunicaciones" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:import namespace="http://www.metlife.com.mx/schema/MassiveProcess/MassiveProcessWS" /> 
+  <xsd:import namespace="http://www.metlife.com.mx/schema/Select/SelectWS" /> 
+  <xsd:import namespace="http://www.metlife.com.mx/schema/SendMail/SendMailWS" /> 
+  <xsd:element name="massiveProcessRequest" type="tns:massiveProcessRequest" /> 
+  <xsd:element name="massiveProcessResponse" type="tns:massiveProcessResponse" /> 
+  <xsd:element name="selectRequest" type="tns:selectRequest" /> 
+  <xsd:element name="selectResponse" type="tns:selectResponse" /> 
+  <xsd:element name="sendMailRequest" type="tns:sendMailRequest" /> 
+  <xsd:element name="sendMailResponse" type="tns:sendMailResponse" /> 
+ <xsd:complexType name="massiveProcessRequest">
+ <xsd:sequence>
+  <xsd:element ref="ns:TXLifeRequest" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="massiveProcessResponse">
+ <xsd:sequence>
+  <xsd:element ref="ns:TXLifeResponse" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="selectRequest">
+ <xsd:sequence>
+  <xsd:element ref="ns2:TXLifeRequest" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="selectResponse">
+ <xsd:sequence>
+  <xsd:element ref="ns2:TXLifeResponse" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="sendMailRequest">
+ <xsd:sequence>
+  <xsd:element ref="ns3:TXLifeRequest" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+ <xsd:complexType name="sendMailResponse">
+ <xsd:sequence>
+  <xsd:element ref="ns3:TXLifeResponse" /> 
+  </xsd:sequence>
+  </xsd:complexType>
+  </xsd:schema>
+  </wsdl:types>
+ <wsdl:message name="wsdHubComunicacionesSF_PortType_sendMailRequest">
+  <wsdl:part name="parameters" element="tns:sendMailRequest" /> 
+  </wsdl:message>
+ <wsdl:message name="wsdHubComunicacionesSF_PortType_selectRequest">
+  <wsdl:part name="parameters" element="tns:selectRequest" /> 
+  </wsdl:message>
+ <wsdl:message name="wsdHubComunicacionesSF_PortType_massiveProcessRequest">
+  <wsdl:part name="parameters" element="tns:massiveProcessRequest" /> 
+  </wsdl:message>
+ <wsdl:message name="wsdHubComunicacionesSF_PortType_selectResponse">
+  <wsdl:part name="parameters" element="tns:selectResponse" /> 
+  </wsdl:message>
+ <wsdl:message name="wsdHubComunicacionesSF_PortType_massiveProcessResponse">
+  <wsdl:part name="parameters" element="tns:massiveProcessResponse" /> 
+  </wsdl:message>
+ <wsdl:message name="wsdHubComunicacionesSF_PortType_sendMailResponse">
+  <wsdl:part name="parameters" element="tns:sendMailResponse" /> 
+  </wsdl:message>
+ <wsdl:portType name="wsdHubComunicacionesSF_PortType">
+ <wsdl:operation name="massiveProcess">
+  <wsdl:input message="tns:wsdHubComunicacionesSF_PortType_massiveProcessRequest" /> 
+  <wsdl:output message="tns:wsdHubComunicacionesSF_PortType_massiveProcessResponse" /> 
+  </wsdl:operation>
+ <wsdl:operation name="select">
+  <wsdl:input message="tns:wsdHubComunicacionesSF_PortType_selectRequest" /> 
+  <wsdl:output message="tns:wsdHubComunicacionesSF_PortType_selectResponse" /> 
+  </wsdl:operation>
+ <wsdl:operation name="sendMail">
+  <wsdl:input message="tns:wsdHubComunicacionesSF_PortType_sendMailRequest" /> 
+  <wsdl:output message="tns:wsdHubComunicacionesSF_PortType_sendMailResponse" /> 
+  </wsdl:operation>
+  </wsdl:portType>
+ <wsdl:binding name="MxHUBCOM_WSD_wsdHubComunicacionesSF_Binder" type="tns:wsdHubComunicacionesSF_PortType">
+  <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" /> 
+ <wsdl:operation name="massiveProcess">
+  <soap:operation soapAction="MxHUBCOM_WSD_wsdHubComunicacionesSF_Binder_massiveProcess" style="document" /> 
+ <wsdl:input>
+  <soap:body parts="parameters" use="literal" /> 
+  </wsdl:input>
+ <wsdl:output>
+  <soap:body parts="parameters" use="literal" /> 
+  </wsdl:output>
+  </wsdl:operation>
+ <wsdl:operation name="select">
+  <soap:operation soapAction="MxHUBCOM_WSD_wsdHubComunicacionesSF_Binder_select" style="document" /> 
+ <wsdl:input>
+  <soap:body parts="parameters" use="literal" /> 
+  </wsdl:input>
+ <wsdl:output>
+  <soap:body parts="parameters" use="literal" /> 
+  </wsdl:output>
+  </wsdl:operation>
+ <wsdl:operation name="sendMail">
+  <soap:operation soapAction="MxHUBCOM_WSD_wsdHubComunicacionesSF_Binder_sendMail" style="document" /> 
+ <wsdl:input>
+  <soap:body parts="parameters" use="literal" /> 
+  </wsdl:input>
+ <wsdl:output>
+  <soap:body parts="parameters" use="literal" /> 
+  </wsdl:output>
+  </wsdl:operation>
+  </wsdl:binding>
+ <wsdl:service name="MxHUBCOM.WSD.wsdHubComunicacionesSF">
+ <wsdl:port name="MxHUBCOM_WSD_wsdHubComunicacionesSF_Port" binding="tns:MxHUBCOM_WSD_wsdHubComunicacionesSF_Binder">
+  <soap:address location="http://mxsrvwebmtdst:5556/ws/MxHUBCOM.WSD.wsdHubComunicacionesSF/MxHUBCOM_WSD_wsdHubComunicacionesSF_Port" /> 
+  </wsdl:port>
+  </wsdl:service>
+  </wsdl:definitions>

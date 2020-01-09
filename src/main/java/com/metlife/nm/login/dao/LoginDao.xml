@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<bean id="LoginDao" class="com.metlife.nm.login.dao.LoginDaoImpl">
+		<property name="dataSource" ref="dataSource"></property>
+
+		<property name="qryUsuarioPorUsername">
+			<value>
+					<![CDATA[		
+						SELECT USU.USERNAME        , USU.NOMBRE         , USU.CVE_ROL ROLID , USU.ESTATUS VIGENCIA,
+							USU.CVE_LINEA_NEGOCIO     , ROL.DES_ROL ROL, LIN.DES_LINEA_NEGOCIO
+						FROM MXGES_SEG_USUARIOS USU, MXGES_SEG_ROLES ROL, MXGES_CAT_LINEAS_NEGOCIOS LIN
+						WHERE USU.CVE_ROL         = ROL.CVE_ROL
+						AND USU.CVE_LINEA_NEGOCIO = LIN.CVE_LINEA_NEGOCIO
+						AND USU.USERNAME = ?
+					]]>
+			</value>
+		</property>
+		<property name="qryPantallasPorRol">
+			<value>
+					<![CDATA[		
+						SELECT ID_PANTALLA PANTALLAID
+						FROM MXGES_SEG_ROL_PANT
+						WHERE CVE_ROL  = ?
+						AND SW_CONSULTA=1
+					]]>
+			</value>
+		</property>
+
+
+	</bean>
+</beans>

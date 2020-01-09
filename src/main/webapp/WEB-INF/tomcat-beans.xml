@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<!--MOD X MAURICIO 
+	<bean id="dataSource" class="oracle.jdbc.pool.OracleDataSource">
+		<property name="driverType" value="oracle.jdbc.OracleDriver" />
+		<property name="URL" value="jdbc:oracle:thin:@172.25.1.6:1523:metpf" />
+		<property name="user" value="mxgeswr" />
+		<property name="password" value="geswr_14pf" />
+	</bean> -->
+	
+	<!-- data source Meltsan lo comento MAURO   PASS ANTERIOR: MT5_MXG3S_4DM   PASS ACTUAL: MT5_MXG3S_NR 
+	 <bean id="dataSource" class="oracle.jdbc.pool.OracleDataSource">
+		<property name="driverType" value="oracle.jdbc.OracleDriver" />
+		<property name="URL" value="jdbc:oracle:thin:@dev-admin.meltsan.com:1521:MTSDESA" />
+		<property name="user" value="MTS_MXGES_ADM" />
+		<property name="password" value="MT5_MXG3S_NR" />
+	</bean>-->
+	
+	<!-- BD GERARDO  
+	 <bean id="dataSource" class="oracle.jdbc.pool.OracleDataSource">
+		<property name="driverType" value="oracle.jdbc.OracleDriver" />
+		<property name="URL" value="jdbc:oracle:thin:@dev-admin.meltsan.com:1521:MTSDESA" />
+		<property name="user" value="MXGES_GRS" />
+		<property name="password" value="MXGES_GRS1" />
+	</bean>-->
+	<!-- BD GERARDO -->
+	 <bean id="dataSource" class="oracle.jdbc.pool.OracleDataSource">
+		<property name="driverType" value="oracle.jdbc.OracleDriver" />
+		<property name="URL" value="jdbc:oracle:thin:@10.30.5.15:1521:meltsanD" />
+		<property name="user" value="MET_NVOMER_ADM" />
+		<property name="password" value="MET_NVOMER_ADM" />
+	</bean>
+	
+	<!-- data source UAT lo comento arturo
+	<bean id="dataSource" class="oracle.jdbc.pool.OracleDataSource">
+		<property name="driverType" value="oracle.jdbc.OracleDriver" />
+		<property name="URL" value="jdbc:oracle:thin:@10.77.212.125:1523:metpf" />
+		<property name="user" value="mxgeswr" />
+		<property name="password" value="geswr_14pf" />
+	</bean>-->
+	<!-- 
+	<bean id="dataSource" class="oracle.jdbc.pool.OracleDataSource">
+		<property name="driverType" value="oracle.jdbc.OracleDriver" />
+		<property name="URL" value="jdbc:oracle:thin:@10.77.212.127:1528:METLIFEX" />
+		<property name="user" value="USIGAH" />
+		<property name="password" value="uooms_7d" />
+	</bean> -->
+	
+	
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		p:dataSource-ref="dataSource" />
+
+    <bean id="contextApplicationContextProvider" class="com.metlife.nm.domain.ApplicationContextProvider"></bean>  
+
+	<!-- Configuracion de Scheduler 
+	<bean id="EnviaNotificacionJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="EnviaNotificacionService" />
+		<property name="targetMethod" value="enviaNotificaciones" />
+	</bean>
+
+	<bean id="EnviaNotificacionesCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="EnviaNotificacionJob" />
+		<property name="cronExpression" value="${enviaNotificacion.cronExpression}" />
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean"
+		destroy-method="destroy">
+		<property name="triggers">
+			<list>
+				<ref bean="EnviaNotificacionesCronTrigger" />
+			</list>
+		</property>
+	</bean>
+	-->
+	<bean id="Scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	</bean>
+
+	<bean id="EnviaReporteJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="EnviaReporteCalidadService" />
+		<property name="targetMethod" value="enviaReporteCalidad" />
+	</bean>
+
+	<bean id="EnviaReporteCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="EnviaReporteJob" />
+		<property name="cronExpression" value="${enviaReporte.cronExpression}" />
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean"
+		destroy-method="destroy">
+		<property name="triggers">
+			<list>
+				<ref bean="EnviaReporteCronTrigger" />
+			</list>
+		</property>
+	</bean>
+	
+	<!-- Se agrega nueva configuracion dinamica de schedulers -->
+	
+	
+</beans>

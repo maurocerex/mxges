@@ -1,0 +1,10 @@
+#exceptioncontainer.yui-panel .hd {
+	background: #FF0000;
+	font-family: Verdana;
+	color: #000000;
+}
+
+#exceptioncontainer.yui-panel .bd {
+	background: #FFF;
+	background-color: #FFF;
+}

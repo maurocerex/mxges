@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<beans>
+	<bean id="NotificacionesDao" class="com.metlife.nm.notificaciones.dao.NotificacionesDaoImpl">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="qryLobs">
+			<value>
+					<![CDATA[
+						SELECT CVE_LINEA_NEGOCIO KEY, DES_LINEA_NEGOCIO VALUE, ESTATUS
+						FROM MXGES_CAT_LINEAS_NEGOCIOS
+					]]>
+			</value>
+		</property>
+		<property name="qryCatStatus">
+			<value>
+				<![CDATA[
+				  SELECT VAL.CLAVE_01 KEY     , VAL.VALOR_01 VALUE
+					   FROM MXGES_CAT_VALORES VAL, MXGES_CAT_METATABLAS MET
+					  WHERE VAL.CVE_TABLA = MET.CVE_TABLA
+					AND VAL.ESTATUS       = 'A'
+					AND MET.CVE_TABLA     = 'CAT_ESTATUS'
+				]]>
+			</value>
+		</property>
+		<property name="qryCatCanalEnvio">
+			<value>
+				<![CDATA[
+				  SELECT VAL.CLAVE_01 KEY     , VAL.VALOR_01 VALUE
+					   FROM MXGES_CAT_VALORES VAL, MXGES_CAT_METATABLAS MET
+					  WHERE VAL.CVE_TABLA = MET.CVE_TABLA
+					AND VAL.ESTATUS       = 'A'
+					AND MET.CVE_TABLA     = 'CAT_CANAL_ENVIO'
+				]]>
+			</value>
+		</property>
+		<property name="qryCatMedio">
+			<value>
+				<![CDATA[
+				  	SELECT VAL.CLAVE_01 KEY     , VAL.VALOR_01 VALUE
+					   FROM MXGES_CAT_VALORES VAL, MXGES_CAT_METATABLAS MET
+					  WHERE VAL.CVE_TABLA = MET.CVE_TABLA
+					AND VAL.ESTATUS       = 'A'
+					AND MET.CVE_TABLA     = 'CAT_MEDIO_ENVIO'
+				]]>
+			</value>
+		</property>
+		<property name="qryProcesos">
+			<value>
+					<![CDATA[
+						SELECT LIN.DES_LINEA_NEGOCIO, PRO.CVE_LINEA_NEGOCIO, PRO.CVE_PROCESO KEY, PRO.DES_PROCESO VALUE,
+						PRO.ESTATUS                , PRIORIDAD            , PRO.SW_NOTIFICA_REPORTE
+					FROM MXGES_CAT_PROCESOS PRO , MXGES_CAT_LINEAS_NEGOCIOS LIN
+					WHERE NOT EXISTS
+						(SELECT NULL
+						FROM MXGES_V_METATABLAS1 MET
+						WHERE MET.CLAVE   = PRO.CVE_PROCESO
+						AND MET.CVE_TABLA = 'CAT_PROC_BACK'
+						)
+					AND PRO.CVE_LINEA_NEGOCIO = ?
+					AND PRO.CVE_LINEA_NEGOCIO = LIN.CVE_LINEA_NEGOCIO
+					AND PRO.ESTATUS           = 'A'
+					ORDER BY VALUE
+					]]>
+			</value>
+		</property>
+		
+		
+		<property name="qryMensajes">
+			<bean class="com.metlife.nm.domain.JdbcQueryParameters">
+				<property name="sqlBase">
+					<value>
+                        <![CDATA[
+								SELECT CVE_MENSAJE KEY, CVE_MENSAJE VALUE
+								FROM MXGES_MENSAJES
+								WHERE CVE_LINEA_NEGOCIO = ?
+								AND ESTATUS               = 'A'
+						]]>
+					</value>
+				</property>
+				<property name="optionalParameters">
+					<props>
+						<prop key="proceso">AND CVE_PROCESO = ?</prop>
+						<prop key="medio">AND CVE_MEDIO_ENVIO = ?</prop>
+					</props>
+				</property>
+				<property name="sqlLast">
+					<value>) WHERE R BETWEEN ? AND ?</value>
+				</property>
+			</bean>
+		</property>
+		
+		
+		<property name="qryMensaje">
+			<value>
+					<![CDATA[
+						SELECT CVE_MENSAJE, CVE_PROCESO , CVE_LINEA_NEGOCIO, DES_MENSAJE,
+							CVE_MEDIO_ENVIO  , ESTATUS     , ASUNTO           , CUERPO     
+						FROM MXGES_MENSAJES 
+						where CVE_MENSAJE = ?
+					]]>
+			</value>
+		</property>
+
+
+
+		<property name="insNotificacion">
+			<value>
+					<![CDATA[
+						INSERT
+						INTO MXGES_NOTIFICACIONES
+							(
+								CVE_NOTIFICACION  , CVE_PROCESO    , CVE_LINEA_NEGOCIO, CVE_MENSAJE    ,
+								DES_NOTIFICACION  , ESTATUS        , CVE_MEDIO_ENVIO  , SW_ENVIO_AGENTE,
+								SW_ENVIO_CLIENTE  , SW_ENVIO_PROMOT, CVE_TIPO_RESP_CB , SW_REINTENTA_CB,
+								SW_DXN            , SW_COB_BANCARIA, SW_PAGO_DIRECTO  , SW_REGLAB_BASE ,
+								SW_REGLAB_EVENTUAL, CREADO_POR     , FEC_CREACION     , SW_CANAL_ENVIO
+							)
+							VALUES
+							(
+								? , ? , ? , ? ,
+								? , ? , ? , ? ,
+								? , ? , ? , ? ,
+								? , ? , ? , ? ,
+								? , ? , SYSDATE, ?
+							)
+	]]>
+			</value>
+		</property>
+		<property name="qryBusquedaNotificaciones">
+			<bean class="com.metlife.nm.domain.JdbcQueryParameters">
+				<property name="sqlBase">
+					<value>
+                        <![CDATA[
+							SELECT NOTIF.CVE_NOTIFICACION  , NOTIF.CVE_PROCESO      , PROC.DES_PROCESO         , NOTIF.CVE_LINEA_NEGOCIO,
+								LINEA.DES_LINEA_NEGOCIO       , NOTIF.CVE_MENSAJE      , NOTIF.DES_NOTIFICACION   , NOTIF.ESTATUS          ,
+								NOTIF.CVE_MEDIO_ENVIO         , NOTIF.SW_ENVIO_AGENTE  , NOTIF.SW_ENVIO_CLIENTE   , NOTIF.SW_ENVIO_PROMOT  ,
+								NOTIF.CVE_TIPO_RESP_CB        , NOTIF.SW_REINTENTA_CB  , NOTIF.SW_DXN             , NOTIF.SW_COB_BANCARIA  ,
+								NOTIF.SW_PAGO_DIRECTO         , NOTIF.SW_REGLAB_BASE   , NOTIF.SW_REGLAB_EVENTUAL , /*'2' as SW_CANAL_ENVIO*/ NOTIF.SW_CANAL_ENVIO
+							FROM MXGES_NOTIFICACIONES NOTIF, MXGES_CAT_PROCESOS PROC, MXGES_CAT_LINEAS_NEGOCIOS LINEA
+							WHERE NOTIF.CVE_PROCESO     = PROC.CVE_PROCESO
+							AND NOTIF.CVE_PROCESO != 'PROC_CALIDAD'
+							AND NOTIF.CVE_LINEA_NEGOCIO = LINEA.CVE_LINEA_NEGOCIO
+							
+							
+							
+							
+						]]>
+					</value>
+				</property>
+				<property name="optionalParameters">
+					<props>
+						<prop key="proceso">AND NOTIF.CVE_PROCESO = ?</prop>
+						<prop key="lob">AND NOTIF.CVE_LINEA_NEGOCIO = ?</prop>
+						<prop key="status">AND NOTIF.ESTATUS = ?</prop>
+						<prop key="orderBy">ORDER BY NOTIF.CVE_MEDIO_ENVIO</prop>
+					</props>
+				</property>
+				<property name="sqlLast">
+					<value>) WHERE R BETWEEN ? AND ?</value>
+				</property>
+			</bean>
+		</property>
+
+		<property name="updNotificacion">
+			<value>
+					<![CDATA[
+								UPDATE MXGES_NOTIFICACIONES
+								SET DES_NOTIFICACION     = ? , ESTATUS= ?        , ACTUALIZADO_POR = ? , FEC_ACTUALIZACION = SYSDATE,
+									SW_ENVIO_CLIENTE        =?  , SW_ENVIO_AGENTE =?, SW_DXN =?           , SW_COB_BANCARIA=?          ,
+									SW_PAGO_DIRECTO         =?  , SW_REGLAB_BASE =? , SW_REGLAB_EVENTUAL =? , SW_CANAL_ENVIO =?
+										WHERE CVE_NOTIFICACION = ?
+								AND CVE_MENSAJE          = ?
+							
+					]]>
+			</value>
+		</property>
+		<property name="insFrecuencia">
+			<value>
+					<![CDATA[
+						INSERT
+							INTO MXGES_FREC_NOTIFICACIONES
+								(
+									CVE_NOTIFICACION, CVE_PROCESO, CVE_LINEA_NEGOCIO, CVE_MENSAJE    ,
+									CVE_DIA    , HH_NOTIFICACION  , MM_NOTIFICACION, ID_FRECUENCIA   ,
+									CVE_FRECUENCIA_ENVIO
+									
+								)
+								VALUES
+								(
+									?, ?, ?, ?,
+									?, ?, ?, ?,
+									'S'
+								)							
+					]]>
+			</value>
+		</property>
+		<property name="updFrecuencia">
+			<value>
+					<![CDATA[
+						UPDATE MXGES_FREC_NOTIFICACIONES
+						SET
+						 CVE_PROCESO        = ?,
+						CVE_LINEA_NEGOCIO  = ?,
+						 HH_NOTIFICACION    = ?,
+						MM_NOTIFICACION    = ?
+						WHERE CVE_NOTIFICACION = ?	
+						and CVE_DIA            = ?
+						and CVE_MENSAJE        = ?	
+					]]>
+			</value>
+		</property>
+		<property name="getLast">
+			<value>
+					<![CDATA[
+						SELECT MAX(ID_FRECUENCIA ) FROM MXGES_FREC_NOTIFICACIONES
+					]]>
+			</value>
+		</property>
+		
+		<property name="qryFrecuencias">
+			<value>
+					<![CDATA[
+							
+						SELECT CVE_NOTIFICACION, CVE_PROCESO, CVE_LINEA_NEGOCIO, CVE_MENSAJE    ,
+							ID_FRECUENCIA         , CVE_DIA    , HH_NOTIFICACION  , MM_NOTIFICACION,
+							DIA_ENVIO             , CVE_FRECUENCIA_ENVIO
+						FROM MXGES_FREC_NOTIFICACIONES
+						WHERE CVE_NOTIFICACION = ?
+						AND CVE_PROCESO        = ?
+						AND CVE_LINEA_NEGOCIO  = ?
+						AND CVE_MENSAJE        = ?
+
+					]]>
+			</value>
+		</property>
+		<property name="qryFrecuenciaDia">
+			<value>
+					<![CDATA[
+							
+						SELECT CVE_NOTIFICACION, CVE_PROCESO, CVE_LINEA_NEGOCIO, CVE_MENSAJE    ,
+							ID_FRECUENCIA         , CVE_DIA    , HH_NOTIFICACION  , MM_NOTIFICACION,
+							DIA_ENVIO             , CVE_FRECUENCIA_ENVIO
+						FROM MXGES_FREC_NOTIFICACIONES
+						WHERE CVE_NOTIFICACION = ?
+						AND CVE_PROCESO        = ?
+						AND CVE_LINEA_NEGOCIO  = ?
+						AND CVE_MENSAJE        = ?
+						AND CVE_DIA            = ?
+					]]>
+			</value>
+		</property>
+		
+		<property name="delFrecuencia">
+			<value>
+				<![CDATA[
+					DELETE
+					FROM MXGES_FREC_NOTIFICACIONES
+					WHERE CVE_NOTIFICACION = ?	
+					AND CVE_PROCESO        = ?
+					AND CVE_MENSAJE        = ?	
+					AND CVE_LINEA_NEGOCIO  = ?
+				]]>
+			</value>
+		</property>
+		<property name="updatePendientes2dias">
+			<value>
+				<![CDATA[
+					UPDATE MXGES_ENVIO_NOTIFICACIONES
+					SET CVE_ESTATUS = 'EN'
+					WHERE CVE_ESTATUS = 'PE' 
+					AND CVE_RESP_BANCARIA <> '42' 
+					AND FEC_CREACION < TRUNC(SYSDATE - 2)
+					AND FEC_CREACION >TRUNC(SYSDATE - 32)
+
+				]]>
+			</value>
+		</property>
+
+	</bean>
+</beans>
+	

@@ -1,0 +1,34 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:mcs="http://www.metlife.com.mx/MCSWM01.Docs">
+       <soapenv:Header/>
+       <soapenv:Body>
+          <mcs:msgSend>
+             <TXLife>
+                <TXLifeRequest>
+                   <TransRefGUID>0000001</TransRefGUID>                                                 
+                   <TransType tc="2">${defParam.transType}</TransType> 
+                   <TransExeDate>${defParam.fechaExeDate}</TransExeDate>         
+                   <TransExeTime>${defParam.fechaExeTime}</TransExeTime>           
+                   <OLifE>
+                      <messageId>${dynParam.messageId}</messageId>                 
+                      <messageType>${defParam.messageType}</messageType>                                                                          
+                      <SMS>
+                         <phone>${dynParam.phone}</phone>             
+                         <text>${dynParam.messageText}</text>                  
+                         <itemValStr>
+                            <item>idivr</item>                 
+                            <value>${defParam.idivrValue}</value>                                                                                  
+                         </itemValStr>
+                      </SMS>
+                   </OLifE>
+                   <OLifEExtension>
+                      <SrceCountry>${defParam.sourceCountry}</SrceCountry>            
+                      <SrceCompany>${defParam.sourceCompany}</SrceCompany>            
+                      <SrceSystem>${defParam.sourceSystem}</SrceSystem>              
+                      <Lob>${defParam.idLob}</Lob>                         
+                   </OLifEExtension>
+                </TXLifeRequest>
+             </TXLife>
+          </mcs:msgSend>
+       </soapenv:Body>
+    </soapenv:Envelope>
+    

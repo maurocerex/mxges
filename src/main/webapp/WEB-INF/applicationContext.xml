@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+			http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:mxgesLdap.properties</value>
+				<value>classpath:mxgesad.properties</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<context:annotation-config />
+	<tx:annotation-driven />
+	<!-- NR2.5 MCE Modificacion HUB Paquetes WS-->
+	<context:component-scan base-package="com.metlife.nm,mx.com.metlife.ws" />
+
+ 
+	<!--<bean id="JavaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtpr.metlife.com.mx" />
+		
+		<property name="port" value="25" />
+		<property name="username" value="metlife.indivualpublico@metlife.com.mx" />
+		<property name="password" value="Metlife09+" />
+		<property name="defaultEncoding" value="utf-8" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.smtp.auth">false</prop>
+				<prop key="mail.smtp.starttls.enable">false</prop>
+				<prop key="mail.debug">true</prop>
+				<prop key="mail.smtp.from">metlife.indivualp@metlife.com.mx</prop>
+			</props>
+		</property>
+	</bean>-->
+
+	<bean id="JavaMailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+
+		<property name="port" value="587" />
+		<property name="username" value="mauricio.cortes.es@gmail.com" />
+		<property name="password" value="veronica100207" />
+		<property name="defaultEncoding" value="utf-8" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.smtp.auth">false</prop>
+				<prop key="mail.smtp.starttls.enable">false</prop>
+				<prop key="mail.debug">true</prop>
+				<prop key="mail.smtp.from">mauricio.cortes.es@gmail.com</prop>
+			</props>
+		</property>
+	</bean>
+	<!--
+	<jee:jndi-lookup id="mailSession" jndi-name="mail/mxges" resource-ref="true"/>
+	
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">     
+	    <property name="session" ref="mailSession"/>
+	</bean>
+	-->
+	<!-- NR2.5 MCE Modificacion HUB Propiedades-->
+	<bean id="MxgesProperties" class="com.metlife.nm.domain.MxgesProperties">
+		<property name="pathArchivosCalidad" value="${path.archivos.calidad}" />
+		<property name="ipWs" value="${ip.ws}" />
+		<property name="portWs" value="${port.ws}" />
+		<property name="sourceCountry" value="${source.country}" />
+		<property name="sourceCompany" value="${source.company}" />
+		<property name="sourceSystem" value="${source.system}" />
+		<property name="idLob" value="${id.lob}" />
+		<property name="idivrValue" value="${idivr.value}" />
+		<property name="transType" value="${trans.type}" />
+		<property name="enviaMensajesOl" value="${envia.mensajes.ol}" />
+		<property name="endpointHubComServiceMass" value="${metsb.wsdHubComunicacionesSF.endpoint}" />
+		<property name="fileExtension" value="${metsb.olife.fileextension}" />
+		<property name="olifeSourceCountry" value="${metsb.olifeextension.srcecountry}" />
+		<property name="olifeSourceCompany" value="${metsb.olifeextension.srcecompany}" />
+		<property name="olifeSourceSystem" value="${metsb.olifeextension.srcesystem}" />
+		<property name="testIndicator" value="${metsb.testindicator.tc}" />
+		<property name="testIndicatorValue" value="${metsb.testindicator.value}" />
+		<property name="transtypeTC" value="${metsb.transtype.tc}" />
+		<property name="transtypeValue" value="${metsb.transtype.value}" />
+		<property name="transRefGUID" value="${metsb.transRefGUID}" />
+		<property name="templateHubCom" value="${metsb.payload.template}" />
+		<!--  DIRECTORIOS MXGES-->
+		<property name="itDirExec" value="${itdir.exec}" />
+		<property name="itDirInput" value="${itdir.input}" />
+		<property name="itDirInputLogs" value="${itdir.input.logs}" />
+		<property name="itDirInputRespaldos" value="${itdir.input.respaldos}" />
+    	<property name="itDirSmsOutput" value="${itdir.sms.output}" />
+    	<property name="itDirEmailOutput" value="${itdir.email.output}" />
+    	<!--  BUZON MFT-->
+		<property name="itsftpHost" value="${itsftp.host}" />
+		<property name="itsftpPort" value="${itsftp.port}" />
+		<property name="itsftpUser" value="${itsftp.user}" />
+		<property name="itsftpPass" value="${itsftp.pass}" />
+    	<property name="itsftpOutputdir" value="${itsftp.outputdir}" />    		
+		<!--  Variables de Plantilla SMS	#Variables de Plantilla SMS-->
+	    <property name="itsmsTipo" value="${itsms.tipo}" />
+	    <property name="itsmsValorTipo" value="${itsms.valorTipo}" />
+	    <property name="itsmsNombre" value="${itsms.nombre}" />
+	    <property name="itsmsFechaInicio" value="${itsms.fechaInicio}" />
+	    <property name="itsmsMensaje" value="${itsms.mensaje}" />
+	    <property name="itsmsCsvTelefono" value="${itsms.csvTelefono}" />
+	    <property name="itsmsCsvNombre" value="${itsms.csvNombre}" />
+	    <property name="itsmsCsvCuenta" value="${itsms.csvCuenta}" />
+	    <property name="itsmsCsvSaldo" value="${itsms.csvSaldo}" />
+	    <!-- Variables de Plantilla EMAIL	#Variables de Plantilla EMAIL-->
+	    <property name="itemailTipo" value="${itemail.tipo}" />
+	    <property name="itemailValorTipo" value="${itemail.valorTipo}" />
+	    <property name="itemailNombre" value="${itemail.nombre}" />
+	    <property name="itemailFechaInicio" value="${itemail.fechaInicio}" />
+	    <property name="itemailMensaje" value="${itemail.mensaje}" />
+	    <property name="itemailCsvTelefono" value="${itemail.csvTelefono}" />
+	    <property name="itemailCsvNombre" value="${itemail.csvNombre}" />
+	    <property name="itemailCsvCuenta" value="${itemail.csvCuenta}" />
+	    <property name="itemailCsvSaldo" value="${itemail.csvSaldo}" />
+	</bean>
+
+	<bean id="LdapProperties" class="com.metlife.nm.domain.LdapProperties">
+		<property name="active" value="${ldap.active}" />
+		<property name="errorConexServer" value="${ldap.errorConexServer}" />
+		<property name="errorServerNotExist" value="${ldap.errorServerNotExist}" />
+		<property name="errorServerNotExist1" value="${ldap.errorServerNotExist1}" />
+		<property name="errorOnServer" value="${ldap.errorOnServer}" />
+		<property name="errorOnUser" value="${ldap.errorOnUser}" />
+		<property name="invalidUser" value="${ldap.InvalidUser}" />
+		<property name="invalidPassword" value="${ldap.InvalidPassword}" />
+		<property name="passwordExpired" value="${ldap.PasswordExpired}" />
+		<property name="userIdIslocked" value="${ldap.UserIdIslocked}" />
+		<property name="userIdLocked" value="${ldap.UserIdLocked}" />
+		<property name="hierarchy" value="${ldap.hierarchy}" />
+		<property name="url" value="${ldap.url}" />
+		<property name="forgotPwdUrl" value="${ldap.forgotpwd.url}" />
+		<property name="changePwdUrl" value="${ldap.changepwd.url}" />
+		<property name="dataBaseSid" value="${database.sid}" />
+	</bean>
+
+	<bean id="SecurityProperties" class="com.metlife.nm.domain.SecurityMap">
+		<property name="actionsMap">
+			<map>
+				<entry key="usuarios" value="1" />
+				<entry key="roles" value="2" />
+				<entry key="mensajes" value="3" />
+				<entry key="prioridad" value="4" />
+				<entry key="notificaciones" value="5" />
+				<entry key="reportes" value="6" />
+				<entry key="cifras" value="7" />
+				<entry key="exclusiones" value="8" />
+				<entry key="administra" value="10" />
+				<entry key="cancelaciones" value="11" />
+			</map>
+		</property>
+	</bean>
+	
+	<!-- QUARTZ para lectura de archivo -->
+	<bean id="mxgesFileInboundService" class="com.metlife.nm.carga.adapter.service.MxgesFileInboundServiceImpl" >
+	    <property name="path" value="/Users/Apple/Documents/RENEW_20170102.txt" />
+	</bean>
+	
+	<bean id="schedulerAdapter" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	</bean>
+	
+	<bean id="loadFileJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="mxgesFileInboundService" />
+		<property name="targetMethod" value="readDocument" />
+	</bean>
+
+	<bean id="loadFileCron" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="loadFileJob" />
+		<!-- <property name="cronExpression" value="* * * * * ?" /> -->
+		<!--<property name="cronExpression" value="0 0 0/1 * * ?" />-->
+		<property name="cronExpression" value="0 0/5 * * * ?" />
+	</bean>
+	
+	<bean id="loadFileSchedulerService" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"
+		destroy-method="destroy">
+		<property name="triggers">
+			<list>
+				<ref bean="loadFileCron" />
+			</list>
+		</property>
+	</bean>
+
+</beans>
+

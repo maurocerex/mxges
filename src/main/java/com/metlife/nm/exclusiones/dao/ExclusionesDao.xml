@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<beans>
+	<bean id="ExclusionesDao" class="com.metlife.nm.exclusiones.dao.ExclusionesDaoImpl">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="qryLobs">
+			<value>
+					<![CDATA[
+						SELECT CVE_LINEA_NEGOCIO KEY, DES_LINEA_NEGOCIO VALUE, ESTATUS
+						FROM MXGES_CAT_LINEAS_NEGOCIOS
+					]]>
+			</value>
+		</property>
+		<property name="qryProcesos">
+			<value>
+					<![CDATA[
+						SELECT LIN.DES_LINEA_NEGOCIO, PRO.CVE_LINEA_NEGOCIO, PRO.CVE_PROCESO KEY, PRO.DES_PROCESO VALUE,
+						PRO.ESTATUS                , PRIORIDAD            , PRO.SW_NOTIFICA_REPORTE
+					FROM MXGES_CAT_PROCESOS PRO , MXGES_CAT_LINEAS_NEGOCIOS LIN
+					WHERE NOT EXISTS
+						(SELECT NULL
+						FROM MXGES_V_METATABLAS1 MET
+						WHERE MET.CLAVE   = PRO.CVE_PROCESO
+						AND MET.CVE_TABLA = 'CAT_PROC_BACK'
+						)
+					AND PRO.CVE_LINEA_NEGOCIO = ?
+					AND PRO.CVE_LINEA_NEGOCIO = LIN.CVE_LINEA_NEGOCIO
+					AND PRO.ESTATUS           = 'A'
+					ORDER BY VALUE
+					]]>
+			</value>
+		</property>
+
+
+		<property name="qryDisponibles">
+			<bean class="com.metlife.nm.domain.JdbcQueryParameters">
+				<property name="sqlBase">
+					<value>
+                        <![CDATA[
+							 SELECT E.ID_UNIDAD_PAGO, E.ID_RETENEDOR, E.NOM_UNIDAD_PAGO
+							   FROM ENV_UP E
+							  WHERE NOT EXISTS
+							  (SELECT ID_UNIDAD_PAGO, ID_RETENEDOR
+							     FROM MXGES_EXCLUSIONES_RETUP X
+							    WHERE E.ID_UNIDAD_PAGO = X.ID_UNIDAD_PAGO
+							  AND E.ID_RETENEDOR       = X.ID_RETENEDOR
+							  ) 
+						]]>
+					</value>
+				</property>
+				<property name="optionalParameters">
+					<props>
+						<prop key="retenedor">AND ID_RETENEDOR = ?</prop>
+					</props>
+				</property>
+				<property name="sqlLast">
+					<value>) WHERE R BETWEEN ? AND ?</value>
+				</property>
+			</bean>
+		</property>
+
+		<property name="qryCatSeleccionados">
+			<value>
+					<![CDATA[
+						SELECT ret.ID_RETENEDOR, ret.ID_UNIDAD_PAGO, up.nom_unidad_pago
+						FROM MXGES_EXCLUSIONES_RETUP ret, env_up up
+						WHERE ret.CVE_PROCESO = ?
+						AND ret.CVE_LINEA_NEGOCIO = ?
+						AND	ret.ID_MEDIO_ENVIO=?
+						AND ret.ID_RETENEDOR = up.ID_RETENEDOR
+						AND ret.ID_UNIDAD_PAGO = UP.ID_UNIDAD_PAGO
+		]]>
+			</value>
+		</property>
+		
+		<property name="qryCatSeleccionadosCT">
+			<value>
+					<![CDATA[
+						SELECT ret.ID_RETENEDOR_CT AS ID_RETENEDOR, ret.ID_UNIDAD_PAGO_CT AS ID_UNIDAD_PAGO, up.nom_unidad_pago
+						FROM MXGES_EXCLUSIONES_RETUP_CT ret, env_up up
+						WHERE ret.CVE_PROCESO = ?
+						AND ret.CVE_LINEA_NEGOCIO = ?
+						AND	ret.ID_MEDIO_ENVIO=?
+						AND ret.ID_RETENEDOR_CT = up.ID_RETENEDOR
+						AND ret.ID_UNIDAD_PAGO_CT = UP.ID_UNIDAD_PAGO
+		]]>
+			</value>
+		</property>
+		
+		
+		<property name="qrySeleccionados">
+			<value>
+					<![CDATA[
+						SELECT ID_RETENEDOR, ID_UNIDAD_PAGO, CVE_PROCESO, CVE_LINEA_NEGOCIO
+						FROM MXGES_EXCLUSIONES_RETUP
+						WHERE CVE_PROCESO = ?
+						AND CVE_LINEA_NEGOCIO = ?
+						AND	ID_MEDIO_ENVIO=?
+					]]>
+			</value>
+		</property>
+		<property name="qrySeleccionadosCt">
+			<value>
+					<![CDATA[
+						SELECT ID_RETENEDOR_CT AS ID_RETENEDOR, ID_UNIDAD_PAGO_CT AS ID_UNIDAD_PAGO, CVE_PROCESO, CVE_LINEA_NEGOCIO
+						FROM MXGES_EXCLUSIONES_RETUP_CT
+						WHERE CVE_PROCESO = ?
+						AND CVE_LINEA_NEGOCIO = ?
+						AND	ID_MEDIO_ENVIO=?
+					]]>
+			</value>
+		</property>
+		
+		<property name="qryExcluidos">
+			<value>
+				<![CDATA[
+					SELECT ID_RETENEDOR, ID_UNIDAD_PAGO, CVE_PROCESO, CVE_LINEA_NEGOCIO
+   					FROM MXGES_EXCLUSIONES_RETUP
+				]]>
+			</value>
+		</property>
+		<property name="insExcluido">
+			<value>
+				<![CDATA[
+					 
+					 INSERT
+					    INTO MXGES_EXCLUSIONES_RETUP
+					  (
+					    ID_RETENEDOR, ID_UNIDAD_PAGO, CVE_PROCESO, CVE_LINEA_NEGOCIO, ID_MEDIO_ENVIO
+					  )
+					  VALUES
+					  (
+					    ?, ?, ?, ?, ?
+					  )
+				]]>
+			</value>
+		</property>
+		<property name="insExcluidoCt">
+			<value>
+				<![CDATA[
+					 
+					 INSERT
+					    INTO MXGES_EXCLUSIONES_RETUP_CT
+					  (
+					    ID_RETENEDOR_CT, ID_UNIDAD_PAGO_CT, CVE_PROCESO, CVE_LINEA_NEGOCIO, ID_MEDIO_ENVIO
+					  )
+					  VALUES
+					  (
+					    ?, ?, ?, ?, ?
+					  )
+				]]>
+			</value>
+		</property>
+		<property name="delExcluido">
+			<value>
+				<![CDATA[
+					 DELETE
+					   FROM MXGES_EXCLUSIONES_RETUP
+					  WHERE ID_RETENEDOR  = ?
+					AND ID_UNIDAD_PAGO    = ?
+					AND CVE_PROCESO       = ?
+					AND CVE_LINEA_NEGOCIO = ?
+					AND	ID_MEDIO_ENVIO	  = ?
+				]]>
+			</value>
+		</property>
+		<property name="delExcluidoCt">
+			<value>
+				<![CDATA[
+					 DELETE
+					   FROM MXGES_EXCLUSIONES_RETUP_CT
+					  WHERE ID_RETENEDOR_CT  = ?
+					AND ID_UNIDAD_PAGO_CT    = ?
+					AND CVE_PROCESO       = ?
+					AND CVE_LINEA_NEGOCIO = ?
+					AND	ID_MEDIO_ENVIO	  = ?
+				]]>
+			</value>
+		</property>
+		<property name="qryUnidadesDePago">
+			<value>
+				<![CDATA[
+					 SELECT E.ID_UNIDAD_PAGO, E.NOM_UNIDAD_PAGO, E.ID_RETENEDOR
+					   FROM ENV_UP E
+					  WHERE NOT EXISTS
+					  (SELECT ID_UNIDAD_PAGO, ID_RETENEDOR
+					     FROM MXGES_EXCLUSIONES_RETUP X
+					    WHERE E.ID_UNIDAD_PAGO = X.ID_UNIDAD_PAGO
+					  AND E.ID_RETENEDOR       = X.ID_RETENEDOR
+					  AND X.CVE_PROCESO=?
+					  AND X.ID_MEDIO_ENVIO=?
+					  )
+					  AND STAT_UP = 'A'
+					AND 
+						ID_RETENEDOR = ?
+					ORDER BY ID_RETENEDOR, ID_UNIDAD_PAGO
+				]]>
+			</value>
+		</property>
+		
+		<property name="qryUnidadesDePagoCt">
+			<value>
+				<![CDATA[
+					 SELECT E.ID_UNIDAD_PAGO, E.NOM_UNIDAD_PAGO, E.ID_RETENEDOR
+					   FROM ENV_UP E
+					  WHERE NOT EXISTS
+					  (SELECT ID_UNIDAD_PAGO_CT AS ID_UNIDAD_PAGO, ID_RETENEDOR_CT AS ID_RETENEDOR
+					     FROM MXGES_EXCLUSIONES_RETUP_CT X
+					    WHERE E.ID_UNIDAD_PAGO = X.ID_UNIDAD_PAGO_CT
+					  AND E.ID_RETENEDOR       = X.ID_RETENEDOR_CT
+					  AND X.CVE_PROCESO=?
+					  AND X.ID_MEDIO_ENVIO=?
+					  )
+					  AND STAT_UP = 'A'
+					AND 
+						ID_RETENEDOR = ?
+					ORDER BY ID_RETENEDOR, ID_UNIDAD_PAGO
+				]]>
+			</value>
+		</property>
+		
+		
+		<property name="qryUnidadesDePagosRet">
+			<value>
+				<![CDATA[
+					 SELECT E.ID_UNIDAD_PAGO, E.NOM_UNIDAD_PAGO, E.ID_RETENEDOR
+					   FROM ENV_UP E
+					  WHERE NOT EXISTS
+					  (SELECT ID_UNIDAD_PAGO, ID_RETENEDOR
+					     FROM MXGES_EXCLUSIONES_RETUP X
+					    WHERE E.ID_UNIDAD_PAGO = X.ID_UNIDAD_PAGO
+					  AND E.ID_RETENEDOR       = X.ID_RETENEDOR
+					  AND X.CVE_PROCESO=?
+					  AND X.ID_MEDIO_ENVIO=?
+					  )
+					  AND STAT_UP = 'A'
+					ORDER BY ID_RETENEDOR, ID_UNIDAD_PAGO
+				]]>
+			</value>
+		</property>
+		
+		<property name="qryUnidadesDePagoCtsRet">
+			<value>
+				<![CDATA[
+					 SELECT E.ID_UNIDAD_PAGO, E.NOM_UNIDAD_PAGO, E.ID_RETENEDOR
+					   FROM ENV_UP E
+					  WHERE NOT EXISTS
+					  (SELECT ID_UNIDAD_PAGO_CT AS ID_UNIDAD_PAGO, ID_RETENEDOR_CT AS ID_RETENEDOR
+					     FROM MXGES_EXCLUSIONES_RETUP_CT X
+					    WHERE E.ID_UNIDAD_PAGO = X.ID_UNIDAD_PAGO_CT
+					  AND E.ID_RETENEDOR       = X.ID_RETENEDOR_CT
+					  AND X.CVE_PROCESO=?
+					  AND X.ID_MEDIO_ENVIO=?
+					  )
+					  AND STAT_UP = 'A'
+					ORDER BY ID_RETENEDOR, ID_UNIDAD_PAGO
+				]]>
+			</value>
+		</property>
+		
+		<property name="qryRetenedores">
+			<value>
+				<![CDATA[
+					SELECT 
+						ID_RETENEDOR, DESC_RETENEDOR 
+					FROM 
+						ENV_RET 
+				]]>
+			</value>
+		</property>
+		
+	</bean>
+</beans>
+	

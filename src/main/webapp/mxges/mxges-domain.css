@@ -1,0 +1,169 @@
+.pladform form {
+	font-family: Tahoma;
+}
+
+.pladform fieldset {
+	font-family: Tahoma, Arial, san-serif;
+	margin: 0px 2px 0px 2px;
+	padding: 2px 4px 2px 4px;
+	border: 1px solid #ababab;
+	background-color: #FFF;
+}
+
+.pladform legend {
+	padding: 5px 5px 5px 5px;
+	color: #0088cc;
+	font-family: Tahoma;
+	font-size: 12px;
+	font-style: normal;
+}
+
+.pladform table {
+	font-family: Tahoma;
+	font-size: 11px;
+}
+
+.pladform table td {
+	padding: 0px 2px 2px 0px;
+}
+
+.azulmetlife {
+	color: #0088cc;
+}
+
+.pladnavegacion {
+	font-family: Tahoma;
+	font-size: 13px;
+	font-style: normal;
+	font-weight: bold;
+	font-variant: normal;
+	margin: 0px 0px 0px 0px;
+	padding: 4px 4px 4px 4px;
+	border: 0px solid #ababab;
+	color: #86bb6d;
+}
+
+.pladnavegacion a,.pladnavegacion a:hover,.pladnavegacion a:visited {
+	text-transform: none;
+	color: #86bb6d;
+	text-decoration: none;
+}
+
+.pladnavegacion a:hover {
+	text-decoration: underline;
+}
+
+.pladnavegacion img {
+	margin: 0px 4px 0px 4px;
+}
+
+.pladayuda {
+    font-family: Tahoma;
+    margin: 0px 0px 0px 0px;
+    padding: 4px 4px 4px 4px;
+    border: 0px solid #ababab;
+    color: #86bb6d;
+}
+
+.pladayuda a,.pladayuda a:hover,.pladayuda a:visited {
+    text-transform: none;
+    color: #86bb6d;
+    text-decoration: none;
+}
+
+.pladayuda a:hover {
+    text-decoration: underline;
+}
+
+.pladayuda img {
+    margin: 0px 4px 0px 4px;
+}
+
+.yui-log .pladcategory {
+	background-color: #7B0099;
+}
+
+.errorMessage {
+	color: #FF0000;
+}
+.messagebox {
+    margin-top:10px;
+    margin-bottom:5px;
+    padding-top:5px;
+    padding-bottom:5px;
+    background-color:#D8D8DA;
+    text-align:center;
+    font-family:Tahoma;
+    font-size:11px;
+    font-style:normal;
+    font-weight:bold;
+    color:#336699;  
+}
+
+.taberror em{
+    font-weight:bold;
+    text-align:left;
+    color:#FF0000;
+}
+
+/*
+ Calendar
+*/
+.plad-calendar-box {
+	position: relative;
+}
+
+.plad-calendar-controls {
+	position: relative;
+	white-space: nowrap;
+	background-color: #eee;
+	width: 25em;
+}
+
+.plad-calendar-controls input,.plad-calendar-controls button,.plad-calendar-controls label	{
+	vertical-align: middle;
+}
+
+.plad-calendar-controls label {
+	font-weight: bold;
+}
+
+.plad-calendar-controls input {
+	width: 15em;
+}
+
+.plad-calendar-controls button {
+	padding: 0 5px 0 5px;
+	margin-left: 2px;
+}
+
+.plad-calendar-controls button img {
+	padding: 0;
+	margin: 0;
+	vertical-align: middle;
+}
+
+.plad-calendar-dlg .bd form {
+	clear: left;
+}
+
+.plad-calendar-dlg .bd {
+	padding: 0;
+}
+
+.plad-calendar-dlg .hd {
+	text-align: left;
+}
+
+.plad-calendar-dlg .ft .button-group {
+	text-align: center;
+}
+
+.plad-calendar-dlg_c.yui-overlay-hidden table { 
+	*display: none;
+}
+
+#pladcalendarid {
+	border: none;
+	padding: 1em;
+}

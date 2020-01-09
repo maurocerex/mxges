@@ -1,0 +1,206 @@
+
+.plad-dtbl-container {
+	font-family: Tahoma;
+	margin: 0;
+	padding: 0;
+}
+
+.plad-dtbl-container .plad-paginator {
+	
+}
+
+.plad-dtbl-container .plad-paginator .plad-pgntor {
+	vertical-align: top;
+	height: 15;
+	padding-left: 1px;
+	padding-right: 1px;
+}
+
+.plad-dtbl-container .plad-paginator .plad-pgntor-img {
+	vertical-align: top;
+	height: 15;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+.plad-dtbl-container .plad-dtbl {
+	font-size: 11px;
+	width: 100%;
+}
+
+.plad-dtbl-container .plad-dtbl table {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+.plad-dtbl-container .plad-dtbl th {
+	font-size: 11px;
+	text-align: left;
+	text-decoration: none;
+	padding: 2px 2px 2px 2px;
+}
+
+.plad-dtbl-container .plad-dtbl td {
+	margin: 0;
+	padding: 1px 1px 1px 1px;
+}
+
+.plad-dtbl-container .plad-dtbl .yui-pg-container a {
+	color: #00d;
+}
+
+.plad-dtbl-container .plad-dtbl .yui-pg-pages a {
+	text-decoration: underline;
+}
+
+.plad-dtbl-container .plad-dtbl,.plad-dtbl .yui-dt-loading {
+	text-align: center; /**background-color: transparent;**/
+}
+
+.plad-dtbl-container .pgnt-top-izquierda {
+	float: left;
+	width: 80%;
+	margin: 0;
+	padding: 0;
+	border: 0px groove #ccc;
+	height: 15;
+	text-align: left;
+}
+
+.plad-dtbl-container .pgnt-top-derecha {
+	float: right;
+	width: 180px;
+	margin: 0;
+	padding: 0;
+	border: 0px groove #ccc;
+	height: 15;
+	text-align: right;
+	font-size: 11px;
+	font-weight: bold;
+	color: #999999;
+}
+
+.plad-dtbl-container .pgnt-bottom-izquierda {
+	float: left;
+	width: 80%;
+	margin: 0;
+	padding: 0;
+	border: 0px groove #ccc;
+	height: 15;
+	text-align: left;
+}
+
+.plad-dtbl-container .pgnt-bottom-derecha {
+	float: right;
+	width: 180px;
+	margin: 0;
+	padding: 0;
+	border: 0px groove #ccc;
+	height: 15;
+	text-align: right;
+	font-size: 11px;
+	font-weight: bold;
+	color: #999999;
+}
+
+.plad-dtbl-container .pgnt-bottom-derecha div {
+	display: inline;
+}
+
+.plad-dtbl-container .pgnt-clear {
+	clear: both;
+	margin: 0;
+	padding: 0;
+	height: 0px;
+	line-height: 0px
+}
+
+.plad-dtbl-container .cizquierda .yui-dt-liner{
+  text-align: right;
+}
+
+.yui-skin-sam .plad-dtbl-sort th.yui-dt-asc, .yui-skin-sam .plad-dtbl-sort th.yui-dt-desc {
+  background: #D8D8DA url(images/sprite-plad.png) repeat-x 0 0;
+}
+
+.yui-skin-sam .yui-dt tr.eliminado, 
+.yui-skin-sam .yui-dt tr.eliminado td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.eliminado td.yui-dt-desc, 
+.yui-skin-sam .yui-dt tr.eliminado td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.eliminado td.yui-dt-desc { 
+	text-decoration:line-through;
+}
+
+.yui-skin-sam .yui-dt tr.modif, 
+.yui-skin-sam .yui-dt tr.modif td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.modif td.yui-dt-desc, 
+.yui-skin-sam .yui-dt tr.modif td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.modif td.yui-dt-desc { 
+	font-style: italic;
+}
+
+.yui-skin-sam .yui-dt tr.modificado, 
+.yui-skin-sam .yui-dt tr.modificado td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.modificado td.yui-dt-desc, 
+.yui-skin-sam .yui-dt tr.modificado td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.modificado td.yui-dt-desc { 
+	font-style: italic;
+}
+
+
+.yui-skin-sam .yui-dt tr.nuevo, 
+.yui-skin-sam .yui-dt tr.nuevo td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.nuevo td.yui-dt-desc, 
+.yui-skin-sam .yui-dt tr.nuevo td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.nuevo td.yui-dt-desc { 
+	font-style: italic;
+	text-decoration: underline;
+} 
+/*
+ #86bb6d verde metlife	
+*/
+.yui-skin-sam .yui-dt tr.selected-ver, 
+.yui-skin-sam .yui-dt tr.selected-ver td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.selected-ver td.yui-dt-desc, 
+.yui-skin-sam .yui-dt tr.selected-ver td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.selected-ver td.yui-dt-desc { 
+	font-style: normal;
+    background-color: #86bb6d; 
+} 
+
+/*
+ Amarillo
+*/
+.yui-skin-sam .yui-dt tr.selected-ama, 
+.yui-skin-sam .yui-dt tr.selected-ama td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.selected-ama td.yui-dt-desc, 
+.yui-skin-sam .yui-dt tr.selected-ama td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.selected-ama td.yui-dt-desc { 
+	font-style: normal;
+    background-color: #FFFF00;
+} 
+/*
+ Azul
+*/
+.yui-skin-sam .yui-dt tr.selected-azu, 
+.yui-skin-sam .yui-dt tr.selected-azu td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.selected-azu td.yui-dt-desc, 
+.yui-skin-sam .yui-dt tr.selected-azu td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.selected-azu td.yui-dt-desc { 
+	font-style: normal;
+	color:#FFFFFF;
+    background-color: #0088cc;
+} 
+
+/*
+ Font Rojo
+*/
+.yui-skin-sam .yui-dt tr.fontrojo, 
+.yui-skin-sam .yui-dt tr.fontrojo td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.fontrojo td.yui-dt-desc, 
+.yui-skin-sam .yui-dt tr.fontrojo td.yui-dt-asc, 
+.yui-skin-sam .yui-dt tr.fontrojo td.yui-dt-desc { 
+	font-style: normal;
+	color:#FF0000;
+}

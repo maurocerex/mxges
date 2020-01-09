@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<beans>
+	<bean id="PrioridadDao" class="com.metlife.nm.prioridad.dao.PrioridadDaoImpl">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="qryLobs">
+			<value>
+					<![CDATA[
+						SELECT CVE_LINEA_NEGOCIO KEY, DES_LINEA_NEGOCIO VALUE, ESTATUS
+						FROM MXGES_CAT_LINEAS_NEGOCIOS
+					]]>
+			</value>
+		</property>
+		
+		<property name="qryProcesos">
+			<value>
+					<![CDATA[
+					SELECT LIN.DES_LINEA_NEGOCIO, PRO.CVE_LINEA_NEGOCIO, PRO.CVE_PROCESO , PRO.DES_PROCESO ,
+						PRO.ESTATUS                , PRIORIDAD            , PRO.SW_NOTIFICA_REPORTE
+					FROM MXGES_CAT_PROCESOS PRO , MXGES_CAT_LINEAS_NEGOCIOS LIN
+					WHERE NOT EXISTS
+						(SELECT NULL
+						FROM MXGES_V_METATABLAS1 MET
+						WHERE MET.CLAVE   = PRO.CVE_PROCESO
+						AND MET.CVE_TABLA = 'CAT_PROC_BACK'
+						)
+					AND PRO.CVE_LINEA_NEGOCIO = ?
+					AND PRO.CVE_LINEA_NEGOCIO = LIN.CVE_LINEA_NEGOCIO
+					AND PRO.ESTATUS           = 'A'
+					ORDER BY DES_PROCESO
+					]]>
+			</value>
+		</property>
+		
+		
+		<property name="updProceso">
+			<value>
+					<![CDATA[
+						UPDATE MXGES_CAT_PROCESOS
+						SET PRIORIDAD         =?, SW_NOTIFICA_REPORTE = ? 
+						WHERE CVE_PROCESO     = ?
+						AND CVE_LINEA_NEGOCIO = ? 
+					]]>
+			</value>
+		</property>
+	</bean>
+</beans>
+	

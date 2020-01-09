@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+<bean id="AdministraJobsDao" class="com.metlife.nm.utils.notificacion.dao.AdministraJobsDaoImpl">
+		<property name="dataSource" ref="dataSource"></property>
+		
+		<property name="qryJobs">
+			<value>
+				<![CDATA[SELECT  J.JOB, 
+        P.DES_PARAMETRO, 
+        TO_CHAR(NEXT_DATE, 'HH24:MI') AS HORARIO,
+        BROKEN
+FROM    ALL_JOBS J,
+        MXGES_CAT_PARAMETROS P
+WHERE   J.JOB = P.VALOR_PARAMETRO 
+AND     P.CVE_PARAMETRO LIKE 'P_ID_JOB%']]>
+			</value>
+		</property>
+		
+		<property name="spCambiaEstatus">
+			<value>
+				<![CDATA[						
+	 				MXGES_CAMBIA_ESTATUS_JOB
+				]]>
+			</value>
+		</property>
+		
+	</bean>		
+</beans>

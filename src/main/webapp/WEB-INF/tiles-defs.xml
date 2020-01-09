@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+
+	
+	<definition name="start" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/start-body.jsp" />
+	</definition>
+	<definition name="usuarios" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/usuarios/usuarios.jsp" />
+	</definition>
+	<definition name="roles" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/roles/roles.jsp" />
+	</definition>
+	<definition name="mensajes" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/mensajes/mensajes.jsp" />
+	</definition>
+	<definition name="prioridad" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/prioridad/prioridad.jsp" />
+	</definition>
+	<definition name="notificaciones" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/notificaciones/notificaciones.jsp" />
+	</definition>
+	<definition name="reportes" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/reportes/reportes.jsp" />
+	</definition>
+	<definition name="cifras" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/cifras/cifras.jsp" />
+	</definition>
+	<definition name="exclusiones" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/exclusiones/exclusiones.jsp" />
+	</definition>
+	<definition name="cancelaciones" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/cancelaciones/cancelaciones.jsp" />
+	</definition>
+	<definition name="smsConfig" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/mensajes/sms-config.jsp" />
+	</definition>
+	<definition name="administra" template="/maintemplate.jsp">
+		<put-attribute name="body" value="/administra/administra.jsp" />
+	</definition>
+</tiles-definitions>

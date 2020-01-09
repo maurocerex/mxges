@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<beans>
+	<bean id="MensajesDao" class="com.metlife.nm.mensajes.dao.MensajesDaoImpl">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="qryAccent">
+			<value>
+				<![CDATA[
+				  	SELECT CASE WHEN VALOR_02 = 'S' THEN '1' ELSE '0' END FLAG
+	                FROM MXGES_V_METATABLAS1
+	                WHERE CVE_TABLA = 'CAT_PROPERTIES'
+	                AND CLAVE = 'REM_ACENTOS'
+				]]>
+			</value>
+		</property>
+		
+		<property name="qryUpdAccent">
+			<value>
+				<![CDATA[
+				   UPDATE MXGES_CAT_VALORES
+	                SET VALOR_02 = ?
+	                WHERE CLAVE_01 = 'REM_ACENTOS'
+				]]>
+			</value>
+		</property>
+		
+		<property name="qryCatEnvio">
+			<value>
+				<![CDATA[
+				  SELECT VAL.CLAVE_01 KEY     , VAL.VALOR_01 VALUE
+					   FROM MXGES_CAT_VALORES VAL, MXGES_CAT_METATABLAS MET
+					  WHERE VAL.CVE_TABLA = MET.CVE_TABLA
+					AND VAL.ESTATUS       = 'A'
+					AND MET.CVE_TABLA     = 'CAT_MEDIO_ENVIO'
+				]]>
+			</value>
+		</property>
+		<property name="qryAsociado">
+			<value>
+					<![CDATA[
+							SELECT CVE_NOTIFICACION, CVE_MENSAJE
+							FROM MXGES_NOTIFICACIONES
+							WHERE CVE_MENSAJE = ?
+					]]>
+			</value>
+		</property>
+		<property name="qryCatStatus">
+			<value>
+				<![CDATA[
+				  SELECT VAL.CLAVE_01 KEY     , VAL.VALOR_01 VALUE
+					   FROM MXGES_CAT_VALORES VAL, MXGES_CAT_METATABLAS MET
+					  WHERE VAL.CVE_TABLA = MET.CVE_TABLA
+					AND VAL.ESTATUS       = 'A'
+					AND MET.CVE_TABLA     = 'CAT_ESTATUS'
+				]]>
+			</value>
+		</property>
+		<property name="qryLobs">
+			<value>
+					<![CDATA[
+						SELECT CVE_LINEA_NEGOCIO KEY, DES_LINEA_NEGOCIO VALUE, ESTATUS
+						FROM MXGES_CAT_LINEAS_NEGOCIOS
+					]]>
+			</value>
+		</property>
+		<property name="qryProcesos">
+			<value>
+					<![CDATA[
+						SELECT LIN.DES_LINEA_NEGOCIO, PRO.CVE_LINEA_NEGOCIO, PRO.CVE_PROCESO KEY, PRO.DES_PROCESO VALUE,
+						PRO.ESTATUS                , PRIORIDAD            , PRO.SW_NOTIFICA_REPORTE
+					FROM MXGES_CAT_PROCESOS PRO , MXGES_CAT_LINEAS_NEGOCIOS LIN
+					WHERE NOT EXISTS
+						(SELECT NULL
+						FROM MXGES_V_METATABLAS1 MET
+						WHERE MET.CLAVE   = PRO.CVE_PROCESO
+						AND MET.CVE_TABLA = 'CAT_PROC_BACK'
+						)
+					AND PRO.CVE_LINEA_NEGOCIO = ?
+					AND PRO.CVE_LINEA_NEGOCIO = LIN.CVE_LINEA_NEGOCIO
+					AND PRO.ESTATUS           = 'A'
+					ORDER BY VALUE
+					]]>
+			</value>
+		</property>
+
+
+		<property name="insMensaje">
+			<value>
+					<![CDATA[
+								INSERT
+					INTO MXGES_MENSAJES
+						(
+							CVE_MENSAJE , DES_MENSAJE    , CVE_LINEA_NEGOCIO , CVE_PROCESO ,
+							ESTATUS     ,CVE_MEDIO_ENVIO , ASUNTO            , CUERPO      ,
+							CREADO_POR  , FEC_CREACION   , ACTUALIZADO_POR   , FEC_ACTUALIZACION
+						)
+						VALUES
+						(
+							?, ?      , ?   , ?,
+							?, ?      , ?   , ?,
+							?, SYSDATE, NULL, NULL
+						)
+					]]>
+			</value>
+		</property>
+		<property name="updMensaje">
+			<value>
+					<![CDATA[
+								UPDATE MXGES_MENSAJES
+								SET  
+								 DES_MENSAJE       = ?,
+								 ESTATUS=?,
+								 
+								 ASUNTO            = ?,
+								 CUERPO            = ?,
+								 ACTUALIZADO_POR   = ?,
+								 CVE_PROCESO= ?	,
+								 FEC_ACTUALIZACION = SYSDATE
+								WHERE CVE_MENSAJE     = ?
+								       					
+					]]>
+			</value>
+		</property>
+		<property name="qryMensajesCount">
+			<value>
+					<![CDATA[
+						SELECT COUNT(*)
+						FROM
+							(SELECT CVE_MENSAJE, CVE_PROCESO , CVE_LINEA_NEGOCIO, DES_MENSAJE,
+								CVE_MEDIO_ENVIO   , ESTATUS     , ASUNTO           , CUERPO
+							FROM MXGES_MENSAJES)
+					]]>
+			</value>
+		</property>
+
+		<property name="qryMensajes">
+			<value>
+					<![CDATA[
+						 SELECT MEN.CVE_MENSAJE, MEN.CVE_PROCESO        , PROC.DES_PROCESO    , MEN.CVE_LINEA_NEGOCIO,
+								LIN.DES_LINEA_NEGOCIO , MEN.DES_MENSAJE        , MEN.CVE_MEDIO_ENVIO , MEN.ESTATUS          ,
+								MEN.ASUNTO            , MEN.CUERPO             , ROW_NUMBER( ) OVER( ORDER BY MEN.CVE_MENSAJE DESC ) R
+							FROM MXGES_MENSAJES MEN, MXGES_CAT_PROCESOS PROC, MXGES_CAT_LINEAS_NEGOCIOS LIN
+							WHERE MEN.CVE_PROCESO     = PROC.CVE_PROCESO
+							AND MEN.CVE_PROCESO != 'PROC_CALIDAD'
+							AND MEN.CVE_PROCESO != 'PROC_CARGA'
+							AND MEN.CVE_LINEA_NEGOCIO = LIN.CVE_LINEA_NEGOCIO
+							ORDER BY MEN.FEC_CREACION, MEN.CVE_MEDIO_ENVIO DESC
+					
+					]]>
+			</value>
+		</property>
+		<property name="qryBusquedaMensajes">
+            <bean class="com.metlife.nm.domain.JdbcQueryParameters">
+                <property name="sqlBase">
+                    <value>
+                        <![CDATA[
+                            SELECT *
+						FROM
+							(SELECT MEN.CVE_MENSAJE, MEN.CVE_PROCESO        , PROC.DES_PROCESO    , MEN.CVE_LINEA_NEGOCIO,
+								LIN.DES_LINEA_NEGOCIO , MEN.DES_MENSAJE        , MEN.CVE_MEDIO_ENVIO , MEN.ESTATUS          ,
+								MEN.ASUNTO            , MEN.CUERPO             , ROW_NUMBER( ) OVER( ORDER BY MEN.CVE_MENSAJE DESC ) R
+							FROM MXGES_MENSAJES MEN, MXGES_CAT_PROCESOS PROC, MXGES_CAT_LINEAS_NEGOCIOS LIN
+							WHERE MEN.CVE_PROCESO     = PROC.CVE_PROCESO
+							AND MEN.CVE_PROCESO != 'PROC_CALIDAD'
+							AND MEN.CVE_PROCESO != 'PROC_CARGA'
+							AND MEN.CVE_LINEA_NEGOCIO = LIN.CVE_LINEA_NEGOCIO
+							ORDER BY MEN.CVE_MENSAJE DESC
+							)
+							WHERE CVE_MENSAJE     = CVE_MENSAJE
+                        ]]>
+                    </value>
+                </property>
+                <property name="optionalParameters">
+                    <props>
+                        <prop key="proceso">AND CVE_PROCESO   = ?</prop>
+                        <prop key="lob">AND  CVE_LINEA_NEGOCIO     = ?</prop>
+                        <prop key="medio">AND  CVE_MEDIO_ENVIO          = ?</prop>
+                        <prop key="status">AND  ESTATUS  = ? </prop>
+                        
+                    </props>
+                </property>
+                <property name="sqlLast">
+                    <value>) WHERE R BETWEEN ? AND ?</value>
+                </property>
+            </bean>
+        </property>
+		
+		<property name="qryVariables">
+			<value>
+				<![CDATA[
+					  SELECT VAR.CVE_VARIABLE         , VAR.DES_VARIABLE, VAR.LONG_MAX
+					   FROM MXGES_PROC_VARIABLES PROC, MXGES_CAT_VARIABLES VAR
+					  WHERE PROC.CVE_PROCESO = ?
+					AND VAR.ESTATUS          = 'A'
+					AND PROC.CVE_VARIABLE = VAR.CVE_VARIABLE									       					
+				]]>
+			</value>
+		</property>
+		<property name="qryColumnaFisica">
+			<value>
+                <![CDATA[
+						SELECT COL_FISICA
+								FROM MXGES_CAT_VARIABLES
+							WHERE CVE_VARIABLE = ?
+					AND ESTATUS          = 'A'
+                ]]>
+			</value>
+		</property>
+		
+	</bean>
+</beans>
+	

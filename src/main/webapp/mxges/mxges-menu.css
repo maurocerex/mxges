@@ -1,0 +1,74 @@
+html {
+	background-color: #FFFFFF;
+}
+
+em#pladlabel {
+	text-indent: -6em;
+	display: block;
+	background: url(images/pladlogo.gif) center center no-repeat;
+	width: 2em;
+	overflow: hidden;
+}
+
+em#ayuda {
+    text-indent: -6em;
+    display: block;
+    background: url(images/help.gif) center center no-repeat;
+    width: 2em;
+    overflow: hidden;
+}
+
+#ayudadlg.yui-panel .hd {  
+   background:#FFFF66; 
+   font-family:Verdana;
+   color:#000000;
+}
+#ayudadlg.yui-panel .bd { 
+    background:#FFF;
+    background-color:#FFF; 
+}
+
+/*
+Setting the "zoom" property to "1" triggers the "hasLayout" 
+property in IE.  This is necessary to fix a bug IE where 
+mousing mousing off a the text node of MenuItem instance's 
+text label, or help text without the mouse actually exiting the
+boundaries of the MenuItem instance will result in the losing  
+the background color applied when it is selected.
+*/
+
+#filemenu.visible .yuimenuitemlabel,#editmenu.visible .yuimenuitemlabel
+	{ *
+	zoom: 1;
+}
+
+/*
+ Remove "hasLayout" from the submenu of the file menu.			
+*/
+#filemenu.visible .yuimenu .yuimenuitemlabel { *
+	zoom: normal;
+}
+
+/*
+ Panel TEAM e INFO			
+*/
+#panel301.yui-panel .hd {
+   background:#0088cc;
+   font-family:Verdana;
+   color:#FFFFFF;
+}
+#panel30.yui-panel .bd {
+    background:#FFF;
+    background-color:#FFF;
+}
+
+#panel305.yui-panel .hd {
+   background:#86bb6d;
+   font-family:Verdana;
+   color:#FFFFFF;
+}
+#panel305.yui-panel .bd {
+    background:#FFF;
+    background-color:#FFF;
+}
+

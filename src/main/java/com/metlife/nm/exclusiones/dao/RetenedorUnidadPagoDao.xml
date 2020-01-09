@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<bean id="RetenedorUnidadPagoDao" class="com.metlife.nm.exclusiones.dao.RetenedorUnidadPagoDaoImpl">
+		<property name="dataSource" ref="dataSource"></property>
+
+		<property name="qryRetenedores">
+			<value>
+				<![CDATA[
+					SELECT 
+						ID_RETENEDOR, DESC_RETENEDOR 
+					FROM 
+						ENV_RET 
+				]]>
+			</value>
+		</property>
+		
+		<property name="qryUnidadesDePago">
+			<value>
+				<![CDATA[
+					 SELECT E.ID_UNIDAD_PAGO, E.NOM_UNIDAD_PAGO, E.ID_RETENEDOR
+					   FROM ENV_UP E
+					  WHERE NOT EXISTS
+					  (SELECT ID_UNIDAD_PAGO, ID_RETENEDOR
+					     FROM MXGES_EXCLUSIONES_RETUP X
+					    WHERE E.ID_UNIDAD_PAGO = X.ID_UNIDAD_PAGO
+					  AND E.ID_RETENEDOR       = X.ID_RETENEDOR
+					  )
+					  AND STAT_UP = 'A'
+					AND 
+						ID_RETENEDOR = ?
+				]]>
+			</value>
+		</property>
+
+	</bean>
+</beans>

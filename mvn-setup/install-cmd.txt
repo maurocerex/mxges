@@ -1,0 +1,15 @@
+Ejecutar los siguientes comandos en un cmd con la ruta apuntando a este directorio:
+
+mvn install:install-file -DgroupId=metlife -DartifactId=ldap-mngr -Dversion=1.0 -Dpackaging=pom -Dfile=ldap-mngr.pom
+
+mvn install:install-file -DgroupId=metlife -DartifactId=ldap-mngr -Dversion=1.0 -Dpackaging=jar -Dfile=ldap-mngr.jar
+
+mvn install:install-file -DgroupId=metlife -DartifactId=ldapbp -Dversion=1.0 -Dpackaging=pom -Dfile=ldapbp.pom
+
+mvn install:install-file -DgroupId=metlife -DartifactId=ldapbp -Dversion=1.0 -Dpackaging=jar -Dfile=ldapbp.jar
+
+mvn install:install-file -DgroupId=net.sf.json-lib -DartifactId=json-lib -Dversion=2.2.1 -Dpackaging=pom -Dfile=json-lib-2.2.1.pom
+
+mvn install:install-file -DgroupId=net.sf.json-lib -DartifactId=json-lib -Dversion=2.2.1 -Dpackaging=jar -Dfile=json-lib-2.2.1.jar
+
+mvn install:install-file -DgroupId=client.mts.soap -DartifactId=clienteSoap -Dversion=1.0 -Dpackaging=jar -Dfile=schemas.jar
